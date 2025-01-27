@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "publishPackage": "node scripts/publish.js"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.10"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.3"
+  }
+}

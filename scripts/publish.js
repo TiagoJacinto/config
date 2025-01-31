@@ -101,11 +101,7 @@ const { input, checkbox, select } = require('@inquirer/prompts');
       );
     }
 
-    execSync('git push -u origin main', {
-      stdio: 'inherit',
-    });
-
-    console.log('Commit pushed to origin main');
+    console.log('Changes were committed. You can push to origin using: "git push -u origin main"');
   } catch (error) {
     console.error('An error occurred:', error.message);
   }

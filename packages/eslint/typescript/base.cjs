@@ -5,6 +5,12 @@ module.exports = [
   ...tseslint.configs.stylisticTypeChecked,
   {
     rules: {
+      '@typescript-eslint/unbound-method': [
+        'error',
+        {
+          ignoreStatic: true,
+        },
+      ],
       '@typescript-eslint/prefer-nullish-coalescing': [
         'error',
         {

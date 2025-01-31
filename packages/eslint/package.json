@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/eslint-config",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -13,6 +13,9 @@
     "typescript-eslint": "8.21.0",
     "@eslint/js": "9.19.0",
     "globals": "15.14.0",
-    "eslint-config-prettier": "10.0.1"
+    "eslint-config-prettier": "10.0.1",
+    "@nx/eslint-plugin": "^20.4.0",
+    "eslint-plugin-import-helpers": "^2.0.1",
+    "eslint-plugin-jest": "^28.11.0"
   }
 }

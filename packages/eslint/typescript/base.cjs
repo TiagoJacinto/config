@@ -5,6 +5,9 @@ module.exports = [
   ...tseslint.configs.stylisticTypeChecked,
   {
     rules: {
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+      '@typescript-eslint/no-namespace': 'off',
       '@typescript-eslint/unbound-method': [
         'error',
         {

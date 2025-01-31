@@ -1,4 +1,4 @@
-export const defaultDepConstraints = [
+module.exports = [
   {
     sourceTag: 'scope:shared',
     onlyDependOnLibsWithTags: ['scope:shared'],

@@ -10,7 +10,7 @@ function packageExists(name) {
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
 module.exports = [
-  isPrettierAvailable ? require('eslint-config-prettier') : undefined,
+  ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
   ...require('./typescript/base.cjs').map((c) => ({ ...c, files: ['**/*.{ts,tsx}'] })),
   ...require('./javascript.cjs').map((c) => ({ ...c, files: ['**/*.{js,jsx}'] })),
   {

@@ -2,6 +2,27 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const { input, checkbox, select } = require('@inquirer/prompts');
 
+/** @typedef {{name: string, version: string}} PackageJson */
+/** @typedef {{cwd: string, currentVersion:string, newVersion: string, packageJsonPath: string, currentPackageJson: PackageJson, newPackageJson: PackageJson}} PackagesConfiguration */
+
+const askForCommitMessage = () =>
+  input({
+    message: 'Enter the commit message:',
+  });
+
+const getPackageCwd = (/**@type {string}*/ pkg) => `./packages/${pkg}`;
+
+const getPackageJsonPath = (/**@type {string}*/ pkg) => `./packages/${pkg}/package.json`;
+
+const getPackageJson = (/**@type {string}*/ path) =>
+  /**@type {PackageJson}*/ (JSON.parse(fs.readFileSync(path, 'utf-8')));
+
+const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ newPackageJson) => {
+  fs.writeFileSync(path, JSON.stringify(newPackageJson, null, 2));
+
+  console.log(`Version updated to ${newPackageJson.version}`);
+};
+
 (async () => {
   try {
     const mode = await select({
@@ -12,20 +33,20 @@ const { input, checkbox, select } = require('@inquirer/prompts');
     const packages = fs.readdirSync('./packages');
 
     if (mode === 'one') {
-      const package = await select({
+      const pkg = await select({
         message: 'Select the package to publish:',
         choices: packages,
       });
 
       const commitMessage = await askForCommitMessage();
 
-      const packageJsonPath = getPackageJsonPath(package);
+      const packageJsonPath = getPackageJsonPath(pkg);
       const packageJson = getPackageJson(packageJsonPath);
 
       console.log('Current version: ', packageJson.version);
       const version = await input({ message: 'Enter the new version:' });
 
-      const cwd = getPackageCwd(package);
+      const cwd = getPackageCwd(pkg);
 
       updatePackageJson(packageJsonPath, { ...packageJson, version });
 
@@ -34,7 +55,7 @@ const { input, checkbox, select } = require('@inquirer/prompts');
       execSync('git add .', { stdio: 'inherit', cwd });
 
       execSync(
-        `git commit -m "publish package ${package} with version ${version} | ${commitMessage}"`,
+        `git commit -m "publish package ${pkg} with version ${version} | ${commitMessage}"`,
         {
           stdio: 'inherit',
           cwd,
@@ -43,25 +64,25 @@ const { input, checkbox, select } = require('@inquirer/prompts');
     }
 
     if (mode === 'multiple') {
-      const selectedPackages = await checkbox({
+      /** @type {string[]} */ const selectedPackages = await checkbox({
         message: 'Select the packages to publish:',
         choices: packages,
       });
 
       const commitMessage = await askForCommitMessage();
 
-      const packagesConfiguration = {};
+      const packagesConfiguration = /**@type {Record<string, PackagesConfiguration>}*/ ({});
 
-      for (const package of selectedPackages) {
-        const packageJsonPath = getPackageJsonPath(package);
+      for (const pkg of selectedPackages) {
+        const packageJsonPath = getPackageJsonPath(pkg);
         const packageJson = getPackageJson(packageJsonPath);
 
-        console.log(`Configure package: ${package}`);
+        console.log(`Configure package: ${pkg}`);
         console.log('Current version: ', packageJson.version);
         const version = await input({ message: 'Enter the new version:' });
 
-        packagesConfiguration[package] = {
-          cwd: getPackageCwd(package),
+        packagesConfiguration[pkg] = {
+          cwd: getPackageCwd(pkg),
           currentVersion: packageJson.version,
           newVersion: version,
           packageJsonPath,
@@ -73,8 +94,10 @@ const { input, checkbox, select } = require('@inquirer/prompts');
         };
       }
 
-      for (const package of selectedPackages) {
-        const { cwd, packageJsonPath, newPackageJson } = packagesConfiguration[package];
+      for (const pkg of selectedPackages) {
+        const { cwd, packageJsonPath, newPackageJson } = /**@type {PackagesConfiguration}*/ (
+          packagesConfiguration[pkg]
+        );
 
         updatePackageJson(packageJsonPath, newPackageJson);
 
@@ -83,22 +106,22 @@ const { input, checkbox, select } = require('@inquirer/prompts');
         execSync('git add .', { stdio: 'inherit', cwd });
 
         console.log('----------------------------------------------------------');
-      }
 
-      execSync(
-        `git commit -m "publish packages [${selectedPackages.join(
-          ', '
-        )}] | ${commitMessage}" ${Object.entries(packagesConfiguration)
-          .map(
-            ([name, { currentVersion, newVersion }]) =>
-              `-m "${name}: ${currentVersion} => ${newVersion}"`
-          )
-          .join(' ')}`,
-        {
-          stdio: 'inherit',
-          cwd,
-        }
-      );
+        execSync(
+          `git commit -m "publish packages [${selectedPackages.join(
+            ', '
+          )}] | ${commitMessage}" ${Object.entries(packagesConfiguration)
+            .map(
+              ([name, { currentVersion, newVersion }]) =>
+                `-m "${name}: ${currentVersion} => ${newVersion}"`
+            )
+            .join(' ')}`,
+          {
+            stdio: 'inherit',
+            cwd,
+          }
+        );
+      }
     }
 
     execSync('git push -u origin main', {
@@ -106,22 +129,8 @@ const { input, checkbox, select } = require('@inquirer/prompts');
     });
 
     console.log('Commit pushed to origin main');
-  } catch (error) {
+  } catch (e) {
+    const error = /**@type {Error}*/ (e);
     console.error('An error occurred:', error.message);
   }
 })();
-
-const askForCommitMessage = () =>
-  input({
-    message: 'Enter the commit message:',
-  });
-
-const getPackageCwd = (package) => `./packages/${package}`;
-const getPackageJsonPath = (package) => `./packages/${package}/package.json`;
-const getPackageJson = (path) => JSON.parse(fs.readFileSync(path, 'utf-8'));
-
-const updatePackageJson = (path, newPackageJson) => {
-  fs.writeFileSync(path, JSON.stringify(newPackageJson, null, 2));
-
-  console.log(`Version updated to ${newPackageJson.version}`);
-};

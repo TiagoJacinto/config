@@ -12,23 +12,15 @@ function packageExists(/**@type {string}*/ name) {
 
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
-const defaultOptions = {
-  ratios: { refactoring: 1 },
-  files: {
-    ts: ['**/*.{ts,mts,cts,tsx}'],
-    js: ['**/*.{js,mjs,cjs,jsx}'],
-  },
-};
-
 /**
  * @param {Options} options
  */
 module.exports = (options) => {
-  options = mergeDeepLeft(options, defaultOptions);
+  options = mergeDeepLeft(options, require('./defaultOptions.cjs'));
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-    ...require('./sonar.cjs')(options),
+    ...require('./sonar.cjs')(options.ratios),
     ...require('./javascript.cjs').map((c) => ({
       ...c,
       files: options.files.js,

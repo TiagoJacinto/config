@@ -9,10 +9,13 @@ function packageExists(/**@type {string}*/ name) {
 
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
-module.exports = /**@type {string}*/ [
+/**
+ * @param {Options} options
+ */
+module.exports = (options = { ratios: { refactoring: 1 } }) => [
   //@ts-ignore
   ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-  require('eslint-plugin-sonarjs').configs.recommended,
+  ...require('./sonar.cjs')(options),
   ...require('./typescript.cjs').map((c) => ({ ...c, files: ['**/*.{ts,tsx}'] })),
   ...require('./javascript.cjs').map((c) => ({ ...c, files: ['**/*.{js,jsx}'] })),
   {

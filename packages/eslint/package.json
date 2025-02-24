@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/eslint-config",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,8 @@
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-sonarjs": "^3.0.2",
     "globals": "15.14.0",
-    "typescript-eslint": "8.21.0"
+    "typescript-eslint": "8.21.0",
+    "ramda": "^0.30.1"
   },
   "devDependencies": {
     "@types/eslint-config-prettier": "6.11.3"

@@ -1,3 +1,5 @@
+require('./types');
+
 function packageExists(/**@type {string}*/ name) {
   try {
     require.resolve(name);
@@ -9,19 +11,31 @@ function packageExists(/**@type {string}*/ name) {
 
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
+const defaultOptions = {
+  ratios: { refactoring: 1 },
+  files: {
+    ts: ['**/*.{ts,mts,cts,tsx}'],
+    js: ['**/*.{js,mjs,cjs,jsx}'],
+  },
+};
+
 /**
  * @param {Options} options
  */
-module.exports = (options = { ratios: { refactoring: 1 } }) => [
-  //@ts-ignore
+module.exports = (options = defaultOptions) => [
   ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
   ...require('./sonar.cjs')(options),
-  ...require('./typescript.cjs').map((c) => ({ ...c, files: ['**/*.{ts,tsx}'] })),
-  ...require('./javascript.cjs').map((c) => ({ ...c, files: ['**/*.{js,jsx}'] })),
+  ...require('./javascript.cjs').map((c) => ({
+    ...c,
+    files: options.files.js,
+  })),
+  ...require('./typescript.cjs').map((c) => ({
+    ...c,
+    files: options.files.ts,
+  })),
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'],
+    files: [...options.files.js, ...options.files.ts],
     plugins: {
-      //@ts-ignore
       'import-helpers': require('eslint-plugin-import-helpers'),
     },
     rules: {

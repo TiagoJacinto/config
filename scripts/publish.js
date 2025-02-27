@@ -2,7 +2,7 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const { input, checkbox, select } = require('@inquirer/prompts');
 
-/** @typedef {{name: string, version: string}} PackageJson */
+/** @typedef {{name: string, version: string, scripts?:Record<string,string>}} PackageJson */
 /** @typedef {{cwd: string, currentVersion:string, newVersion: string, packageJsonPath: string, currentPackageJson: PackageJson, newPackageJson: PackageJson}} PackagesConfiguration */
 
 const askForCommitMessage = () =>
@@ -47,6 +47,10 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
       const version = await input({ message: 'Enter the new version:' });
 
       const cwd = getPackageCwd(pkg);
+
+      if (packageJson.scripts && 'build' in packageJson.scripts) {
+        execSync('pnpm run build', { stdio: 'inherit', cwd });
+      }
 
       updatePackageJson(packageJsonPath, { ...packageJson, version });
 
@@ -95,9 +99,12 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
       }
 
       for (const pkg of selectedPackages) {
-        const { cwd, packageJsonPath, newPackageJson } = /**@type {PackagesConfiguration}*/ (
-          packagesConfiguration[pkg]
-        );
+        const { cwd, currentPackageJson, packageJsonPath, newPackageJson } =
+          /**@type {PackagesConfiguration}*/ (packagesConfiguration[pkg]);
+
+        if (currentPackageJson.scripts && 'build' in currentPackageJson.scripts) {
+          execSync('pnpm run build', { stdio: 'inherit', cwd });
+        }
 
         updatePackageJson(packageJsonPath, newPackageJson);
 

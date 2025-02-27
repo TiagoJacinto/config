@@ -9,6 +9,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "skipLibCheck": true
   },
 }

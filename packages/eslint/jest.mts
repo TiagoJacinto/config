@@ -1,7 +1,13 @@
-module.exports = [
+import globals from 'globals';
+import jest from 'eslint-plugin-jest';
+
+export default [
   {
+    languageOptions: {
+      globals: globals.jest,
+    },
     plugins: {
-      jest: require('eslint-plugin-jest'),
+      jest,
     },
     rules: {
       '@typescript-eslint/unbound-method': 'off',

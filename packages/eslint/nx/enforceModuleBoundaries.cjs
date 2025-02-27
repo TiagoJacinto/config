@@ -1,4 +1,4 @@
-module.exports = (depConstraints) => [
+export default (depConstraints) => [
   {
     rules: {
       '@nx/enforce-module-boundaries': [

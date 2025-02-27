@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     sourceTag: 'scope:shared',
     onlyDependOnLibsWithTags: ['scope:shared'],

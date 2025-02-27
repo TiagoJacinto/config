@@ -1,6 +1,6 @@
 const nx = require('@nx/eslint-plugin');
 
-module.exports = [
+export default [
   ...nx.configs['flat/base'],
   {
     languageOptions: {

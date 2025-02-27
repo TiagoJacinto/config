@@ -19,7 +19,7 @@ function packageExists(name: string) {
 
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
-export default (options: Options) => {
+export default (options: Options = {}) => {
   options = mergeDeepLeft(options, defaultOptions);
 
   return [

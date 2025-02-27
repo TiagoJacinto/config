@@ -3,7 +3,7 @@ import sonar from 'eslint-plugin-sonarjs';
 import defaultOptions from './defaultOptions';
 import { Options } from './types.js';
 
-export default ({ ratios }: Options) => {
+export default ({ ratios }: Options = {}) => {
   ratios ??= { refactoring: 1 };
 
   ratios = mergeDeepLeft(ratios, defaultOptions.ratios);

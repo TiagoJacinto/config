@@ -9,11 +9,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
     "noEmit": true,
-    "checkJs": true,
   },
-  "include": [
-    "**/*.js",
-  ]
 }

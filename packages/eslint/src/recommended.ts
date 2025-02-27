@@ -1,10 +1,10 @@
-import { Options } from './types.mjs';
+import { Options } from './types.js';
 
 import { mergeDeepLeft } from 'ramda';
-import sonar from './sonar.mjs';
-import javascript from './javascript.mjs';
-import typescript from './typescript.mjs';
-import defaultOptions from './defaultOptions.mjs';
+import sonar from './sonar.js';
+import javascript from './javascript';
+import typescript from './typescript.js';
+import defaultOptions from './defaultOptions';
 import type { Linter } from 'eslint';
 import importHelpers from 'eslint-plugin-import-helpers';
 

@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/eslint-config",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -12,6 +12,7 @@
   "files": [
     "dist"
   ],
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc"
   },

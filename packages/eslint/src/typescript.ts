@@ -1,6 +1,6 @@
 import tseslint, { ConfigArray } from 'typescript-eslint';
 
-const config: ConfigArray = [
+export default <ConfigArray>[
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
@@ -66,5 +66,3 @@ const config: ConfigArray = [
     },
   },
 ];
-
-export default config;

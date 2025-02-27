@@ -49,5 +49,5 @@ export default (options: Options) => {
         ],
       },
     },
-  ] satisfies Linter.Config[];
+  ] as Linter.Config[];
 };

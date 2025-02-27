@@ -2,7 +2,6 @@ import { mergeDeepLeft } from 'ramda';
 import sonar from 'eslint-plugin-sonarjs';
 import defaultOptions from './defaultOptions';
 import { Options } from './types.js';
-import type { Linter } from 'eslint';
 
 export default ({ ratios }: Options) => {
   ratios ??= { refactoring: 1 };
@@ -22,5 +21,5 @@ export default ({ ratios }: Options) => {
         ],
       },
     },
-  ] satisfies Linter.Config[];
+  ];
 };

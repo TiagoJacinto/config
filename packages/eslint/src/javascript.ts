@@ -1,3 +1,3 @@
-import { configs } from '@eslint/js';
+import jslint from '@eslint/js';
 
-export default [configs.recommended];
+export default [jslint.configs.recommended];

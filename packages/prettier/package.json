@@ -1,7 +1,7 @@
 {
   "name": "@tiagojacinto/prettier-config",
   "type": "module",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -17,8 +17,10 @@
   "scripts": {
     "build": "tsc"
   },
-  "devDependencies": {
-    "prettier": "3.5.2",
+  "dependencies": {
     "prettier-plugin-svelte": "3.3.3"
+  },
+  "devDependencies": {
+    "prettier": "3.5.2"
   }
 }

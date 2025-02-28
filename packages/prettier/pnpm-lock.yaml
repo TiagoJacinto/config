@@ -7,13 +7,14 @@ settings:
 importers:
 
   .:
+    dependencies:
+      prettier-plugin-svelte:
+        specifier: 3.3.3
+        version: 3.3.3(prettier@3.5.2)(svelte@5.20.5)
     devDependencies:
       prettier:
         specifier: 3.5.2
         version: 3.5.2
-      prettier-plugin-svelte:
-        specifier: 3.3.3
-        version: 3.3.3(prettier@3.5.2)(svelte@5.20.5)
 
 packages:
 

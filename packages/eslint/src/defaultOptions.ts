@@ -1,4 +1,4 @@
-import { Options } from './types.js';
+import { Options } from './types';
 
 export default {
   ratios: { refactoring: 1 },

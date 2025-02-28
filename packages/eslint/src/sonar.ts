@@ -1,7 +1,7 @@
 import { mergeDeepLeft } from 'ramda';
 import sonar from 'eslint-plugin-sonarjs';
-import defaultOptions from './defaultOptions';
-import { Options } from './types';
+import defaultOptions from './defaultOptions.js';
+import { Options } from './types.js';
 
 export default ({ ratios }: Options = {}) => {
   ratios ??= { refactoring: 1 };

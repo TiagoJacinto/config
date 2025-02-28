@@ -1,9 +1,9 @@
-import { browser } from 'globals';
+import globals from 'globals';
 
 export default [
   {
     languageOptions: {
-      globals: browser,
+      globals: globals.browser,
     },
   },
 ];

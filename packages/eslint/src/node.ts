@@ -1,9 +1,9 @@
-import { node } from 'globals';
+import globals from 'globals';
 
 export default [
   {
     languageOptions: {
-      globals: node,
+      globals: globals.node,
     },
   },
 ];

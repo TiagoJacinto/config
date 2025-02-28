@@ -1,6 +1,7 @@
 {
   "name": "@tiagojacinto/prettier-config",
-  "version": "0.0.3",
+  "type": "module",
+  "version": "0.0.4",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -8,6 +9,13 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TiagoJacinto/config.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
   },
   "devDependencies": {
     "prettier": "3.5.2"

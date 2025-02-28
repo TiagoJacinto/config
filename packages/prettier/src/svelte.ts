@@ -1,7 +1,7 @@
-import base from './base.mjs';
+import { Options } from 'prettier';
+import base from './base.js';
 
-/** @satisfies {import('prettier').Options} */
-const config = {
+export default {
   ...base,
   useTabs: true,
   trailingComma: 'none',
@@ -14,6 +14,4 @@ const config = {
       },
     },
   ],
-};
-
-export default config;
+} satisfies Options;

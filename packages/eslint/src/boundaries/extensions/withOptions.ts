@@ -58,7 +58,7 @@ function adaptImports(
   from: string | [string, Record<string, string>],
   imports: Partial<Import>[] | undefined
 ) {
-  return imports?.map(({ name, importKind }) => {
+  return (imports ?? []).map(({ name, importKind }) => {
     if (!importKind || importKind === 'all')
       return {
         from,

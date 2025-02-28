@@ -48,6 +48,8 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
 
       const cwd = getPackageCwd(pkg);
 
+      execSync('pnpm install', { stdio: 'inherit', cwd });
+
       if (packageJson.scripts && 'build' in packageJson.scripts) {
         execSync('pnpm run build', { stdio: 'inherit', cwd });
       }
@@ -101,6 +103,8 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
       for (const pkg of selectedPackages) {
         const { cwd, currentPackageJson, packageJsonPath, newPackageJson } =
           /**@type {PackagesConfiguration}*/ (packagesConfiguration[pkg]);
+
+        execSync('pnpm install', { stdio: 'inherit', cwd });
 
         if (currentPackageJson.scripts && 'build' in currentPackageJson.scripts) {
           execSync('pnpm run build', { stdio: 'inherit', cwd });

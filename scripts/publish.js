@@ -32,6 +32,8 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
 
     const packages = fs.readdirSync('./packages');
 
+    execSync('pnpm install', { stdio: 'inherit' });
+
     if (mode === 'one') {
       const pkg = await select({
         message: 'Select the package to publish:',

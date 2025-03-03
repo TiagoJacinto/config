@@ -2,8 +2,6 @@ import { Options } from './types.js';
 
 export default {
   ratios: { refactoring: 1 },
-  files: {
-    ts: ['**/*.{ts,mts,cts,tsx}'],
-    js: ['**/*.{js,mjs,cjs,jsx}'],
-  },
-} satisfies Options;
+  extensions: { withProjectService: false },
+  plugins: { javascript: false, typescript: false, svelte: false },
+} satisfies Required<Options>;

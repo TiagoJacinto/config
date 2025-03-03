@@ -1,9 +1,9 @@
 import { mergeDeepLeft } from 'ramda';
 import sonar from 'eslint-plugin-sonarjs';
 import defaultOptions from './defaultOptions.js';
-import { Options } from './types.js';
+import { Linter } from 'eslint';
 
-export default ({ ratios }: Options = {}) => {
+export default ({ ratios }: { ratios?: Partial<Record<'refactoring', number>> } = {}) => {
   ratios ??= { refactoring: 1 };
 
   const mergedRatios = mergeDeepLeft(ratios, defaultOptions.ratios);
@@ -23,5 +23,5 @@ export default ({ ratios }: Options = {}) => {
         ],
       },
     },
-  ];
+  ] satisfies Linter.Config[];
 };

@@ -17,5 +17,6 @@ export type Options = Partial<{
     javascript: PluginOption<LanguageOptions>;
     typescript: PluginOption<LanguageOptions>;
     svelte: PluginOption<LanguageOptions & { svelteConfig: Config }>;
+    react: PluginOption<LanguageOptions>;
   }>;
 }>;

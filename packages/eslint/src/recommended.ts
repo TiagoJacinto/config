@@ -9,25 +9,31 @@ import importHelpers from 'eslint-plugin-import-helpers';
 import { isPrettierAvailable } from './lib/env.js';
 import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
+import react from './react/index.js';
 
-export default (options: Options = {}) => {
-  const mergedUserOptions = mergeDeepLeft(options, defaultOptions);
+type Falsy = null | undefined | false | '' | 0 | 0n;
 
-  const mergedOptions = {
-    ratios: mergedUserOptions.ratios,
+const files = (...extensions: (string | Falsy)[]) =>
+  extensions.filter(Boolean).length > 0 ? [`**/*.{${extensions.join(',')}}`] : [];
+
+function mergeOptions(options: Options) {
+  const { ratios, extensions, plugins } = mergeDeepLeft(options, defaultOptions);
+
+  return {
+    ratios: ratios,
     plugins: {
       javascript: mergePluginOptions({
-        plugin: mergedUserOptions.plugins.javascript,
+        plugin: plugins.javascript,
         base: {
-          files: ['**/*.{js,mjs,cjs,jsx}'],
-          withProjectService: mergedUserOptions.extensions.withProjectService,
+          files: files('js', 'mjs', 'cjs'),
+          withProjectService: extensions.withProjectService,
         },
       }),
       typescript: mergePluginOptions({
-        plugin: mergedUserOptions.plugins.typescript,
+        plugin: plugins.typescript,
         base: {
-          files: ['**/*.{ts,mts,cts,tsx}'],
-          withProjectService: mergedUserOptions.extensions.withProjectService,
+          files: files('ts', 'mts', 'cts'),
+          withProjectService: extensions.withProjectService,
         },
       }),
       svelte: mergePluginOptions<
@@ -35,29 +41,77 @@ export default (options: Options = {}) => {
           svelteConfig?: Config;
         }
       >({
-        plugin: mergedUserOptions.plugins.svelte,
+        plugin: plugins.svelte,
         base: {
-          files: ['**/*.{svelte,svelte.ts}'],
-          withProjectService: mergedUserOptions.extensions.withProjectService,
+          files: files('svelte', plugins.typescript && 'svelte.ts'),
+          withProjectService: extensions.withProjectService,
+        },
+      }),
+      react: mergePluginOptions({
+        plugin: plugins.react,
+        base: {
+          files: files(plugins.javascript && 'jsx', plugins.typescript && 'tsx'),
+          withProjectService: extensions.withProjectService,
         },
       }),
     },
   };
+}
+
+export default (options: Options = {}) => {
+  function mergeOptions(options: Options) {
+    const { ratios, extensions, plugins } = mergeDeepLeft(options, defaultOptions);
+
+    return {
+      ratios: ratios,
+      plugins: {
+        javascript: mergePluginOptions({
+          plugin: plugins.javascript,
+          base: {
+            files: files('js', 'mjs', 'cjs'),
+            withProjectService: extensions.withProjectService,
+          },
+        }),
+        typescript: mergePluginOptions({
+          plugin: plugins.typescript,
+          base: {
+            files: files('ts', 'mts', 'cts'),
+            withProjectService: extensions.withProjectService,
+          },
+        }),
+        svelte: mergePluginOptions<
+          LanguageOptions & {
+            svelteConfig?: Config;
+          }
+        >({
+          plugin: plugins.svelte,
+          base: {
+            files: files('svelte', plugins.typescript && 'svelte.ts'),
+            withProjectService: extensions.withProjectService,
+          },
+        }),
+        react: mergePluginOptions({
+          plugin: plugins.react,
+          base: {
+            files: files(plugins.javascript && 'jsx', plugins.typescript && 'tsx'),
+            withProjectService: extensions.withProjectService,
+          },
+        }),
+      },
+    };
+  }
+
+  const { plugins, ratios } = mergeOptions(options);
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-    ...sonar(mergedOptions),
+    ...sonar({ ratios }),
     {
       files: [
-        ...(mergedOptions.plugins.javascript?.withProjectService
-          ? mergedOptions.plugins.javascript.files
-          : []),
-        ...(mergedOptions.plugins.typescript?.withProjectService
-          ? mergedOptions.plugins.typescript.files
-          : []),
-        ...(mergedOptions.plugins.svelte?.withProjectService
-          ? mergedOptions.plugins.svelte.files
-          : []),
+        ...(plugins.javascript?.withProjectService ? plugins.javascript.files : []),
+        ...(plugins.typescript?.withProjectService ? plugins.typescript.files : []),
+        ...(plugins.svelte?.withProjectService ? plugins.svelte.files : []),
+        ...(plugins.react?.withProjectService ? plugins.react.files : []),
       ],
       languageOptions: {
         parserOptions: {
@@ -67,9 +121,10 @@ export default (options: Options = {}) => {
     },
     {
       files: [
-        ...(mergedOptions.plugins.javascript?.files ?? []),
-        ...(mergedOptions.plugins.typescript?.files ?? []),
-        ...(mergedOptions.plugins.svelte?.files ?? []),
+        ...(plugins.javascript?.files ?? []),
+        ...(plugins.typescript?.files ?? []),
+        ...(plugins.svelte?.files ?? []),
+        ...(plugins.react?.files ?? []),
       ],
       plugins: {
         'import-helpers': importHelpers,
@@ -86,15 +141,15 @@ export default (options: Options = {}) => {
       },
     },
     ...resolveLanguagePlugin({
-      pluginConfig: mergedOptions.plugins.javascript,
+      pluginConfig: plugins.javascript,
       base: javascript,
     }),
     ...resolveLanguagePlugin({
-      pluginConfig: mergedOptions.plugins.typescript,
+      pluginConfig: plugins.typescript,
       base: typescript as Linter.Config[],
     }),
     ...resolveLanguagePlugin({
-      pluginConfig: mergedOptions.plugins.svelte,
+      pluginConfig: plugins.svelte,
       base: svelte.configs.base,
       configure(config, options) {
         if (options.withProjectService)
@@ -102,6 +157,10 @@ export default (options: Options = {}) => {
 
         return config;
       },
+    }),
+    ...resolveLanguagePlugin({
+      pluginConfig: plugins.react,
+      base: react.configs.base,
     }),
   ] satisfies Linter.Config[];
 };

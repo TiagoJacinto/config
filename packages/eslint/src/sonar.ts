@@ -6,7 +6,7 @@ import { Options } from './types.js';
 export default ({ ratios }: Options = {}) => {
   ratios ??= { refactoring: 1 };
 
-  ratios = mergeDeepLeft(ratios, defaultOptions.ratios);
+  const mergedRatios = mergeDeepLeft(ratios, defaultOptions.ratios);
 
   return [
     sonar.configs.recommended,
@@ -16,7 +16,9 @@ export default ({ ratios }: Options = {}) => {
           'warn',
           {
             threshold:
-              ratios.refactoring! <= 0 ? 1 : Math.max(1, Math.round(3 / ratios.refactoring!)),
+              mergedRatios.refactoring <= 0
+                ? 1
+                : Math.max(1, Math.round(3 / mergedRatios.refactoring)),
           },
         ],
       },

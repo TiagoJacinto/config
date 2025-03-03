@@ -19,21 +19,21 @@ function packageExists(name: string) {
 const isPrettierAvailable = packageExists('prettier') && packageExists('eslint-config-prettier');
 
 export default (options: Options = {}) => {
-  options = mergeDeepLeft(options, defaultOptions);
+  const mergedOptions = mergeDeepLeft(options, defaultOptions);
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-    ...sonar(options),
+    ...sonar(mergedOptions),
     ...javascript.map((c) => ({
       ...c,
-      files: options.files!.js!,
+      files: mergedOptions.files.js,
     })),
     ...typescript.map((c) => ({
       ...c,
-      files: options.files!.ts!,
+      files: mergedOptions.files.ts,
     })),
     {
-      files: [...options.files!.js!, ...options.files!.ts!],
+      files: [...mergedOptions.files.js, ...mergedOptions.files.ts],
       plugins: {
         'import-helpers': importHelpers,
       },

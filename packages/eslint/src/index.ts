@@ -10,16 +10,19 @@ import typescript from './typescript.js';
 import { ConfigArray } from 'typescript-eslint';
 import boundaries from './boundaries/index.js';
 
+const configs = {
+  browser,
+  javascript,
+  jest,
+  node,
+  recommended,
+  sonar,
+  typescript: typescript as ConfigArray,
+};
+
+export { nx, boundaries, configs };
 export default {
   nx,
   boundaries,
-  configs: {
-    browser,
-    javascript,
-    jest,
-    node,
-    recommended,
-    sonar,
-    typescript: typescript as ConfigArray,
-  },
+  configs,
 };

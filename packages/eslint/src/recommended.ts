@@ -16,64 +16,22 @@ type Falsy = null | undefined | false | '' | 0 | 0n;
 const files = (...extensions: (string | Falsy)[]) =>
   extensions.filter(Boolean).length > 0 ? [`**/*.{${extensions.join(',')}}`] : [];
 
-function mergeOptions(options: Options) {
-  const { ratios, extensions, plugins } = mergeDeepLeft(options, defaultOptions);
-
-  return {
-    ratios: ratios,
-    plugins: {
-      javascript: mergePluginOptions({
-        plugin: plugins.javascript,
-        base: {
-          files: files('js', 'mjs', 'cjs'),
-          withProjectService: extensions.withProjectService,
-        },
-      }),
-      typescript: mergePluginOptions({
-        plugin: plugins.typescript,
-        base: {
-          files: files('ts', 'mts', 'cts'),
-          withProjectService: extensions.withProjectService,
-        },
-      }),
-      svelte: mergePluginOptions<
-        LanguageOptions & {
-          svelteConfig?: Config;
-        }
-      >({
-        plugin: plugins.svelte,
-        base: {
-          files: files('svelte', plugins.typescript && 'svelte.ts'),
-          withProjectService: extensions.withProjectService,
-        },
-      }),
-      react: mergePluginOptions({
-        plugin: plugins.react,
-        base: {
-          files: files(plugins.javascript && 'jsx', plugins.typescript && 'tsx'),
-          withProjectService: extensions.withProjectService,
-        },
-      }),
-    },
-  };
-}
-
 export default (options: Options = {}) => {
-  function mergeOptions(options: Options) {
+  function mergeOptions() {
     const { ratios, extensions, plugins } = mergeDeepLeft(options, defaultOptions);
 
     return {
-      ratios: ratios,
+      ratios,
       plugins: {
         javascript: mergePluginOptions({
-          plugin: plugins.javascript,
+          plugin: plugins.languages.javascript,
           base: {
             files: files('js', 'mjs', 'cjs'),
             withProjectService: extensions.withProjectService,
           },
         }),
         typescript: mergePluginOptions({
-          plugin: plugins.typescript,
+          plugin: plugins.languages.typescript,
           base: {
             files: files('ts', 'mts', 'cts'),
             withProjectService: extensions.withProjectService,
@@ -84,16 +42,19 @@ export default (options: Options = {}) => {
             svelteConfig?: Config;
           }
         >({
-          plugin: plugins.svelte,
+          plugin: plugins.languages.svelte,
           base: {
-            files: files('svelte', plugins.typescript && 'svelte.ts'),
+            files: files('svelte', plugins.languages.typescript && 'svelte.ts'),
             withProjectService: extensions.withProjectService,
           },
         }),
         react: mergePluginOptions({
-          plugin: plugins.react,
+          plugin: plugins.languages.react,
           base: {
-            files: files(plugins.javascript && 'jsx', plugins.typescript && 'tsx'),
+            files: files(
+              plugins.languages.javascript && 'jsx',
+              plugins.languages.typescript && 'tsx'
+            ),
             withProjectService: extensions.withProjectService,
           },
         }),
@@ -101,7 +62,7 @@ export default (options: Options = {}) => {
     };
   }
 
-  const { plugins, ratios } = mergeOptions(options);
+  const { plugins, ratios } = mergeOptions();
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),

@@ -9,6 +9,7 @@ import sonar from './sonar.js';
 import typescript from './typescript.js';
 import { ConfigArray } from 'typescript-eslint';
 import boundaries from './boundaries/index.js';
+import architecture from './architecture/index.js';
 
 const configs = {
   browser,
@@ -20,9 +21,10 @@ const configs = {
   typescript: typescript as ConfigArray,
 };
 
-export { nx, boundaries, configs };
+export { nx, boundaries, configs, architecture };
 export default {
   nx,
   boundaries,
   configs,
+  architecture,
 };

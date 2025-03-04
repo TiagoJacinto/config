@@ -17,12 +17,12 @@ export type Options = Simplify<
       withProjectService: boolean;
     }>;
     plugins: Partial<{
-      languages: {
+      languages: Partial<{
         javascript: PluginOption<LanguageOptions>;
         typescript: PluginOption<LanguageOptions>;
         svelte: PluginOption<LanguageOptions & { svelteConfig: Config }>;
         react: PluginOption<LanguageOptions>;
-      };
+      }>;
     }>;
   }>
 >;

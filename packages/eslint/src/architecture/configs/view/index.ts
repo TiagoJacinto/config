@@ -1,5 +1,5 @@
-import recommended from './recommended.js';
+import jsx from './jsx.js';
 
 export default {
-  recommended,
+  jsx,
 };

@@ -1,6 +1,6 @@
 import { Linter } from 'eslint';
-import functional from 'eslint-plugin-functional';
 import createNoRestrictedSyntax from 'eslint-no-restricted/syntax';
+import base from '../base.js';
 
 const functionSelectors = ['FunctionDeclaration', 'ArrowFunctionExpression'];
 
@@ -15,9 +15,9 @@ const noRestrictedSyntax = createNoRestrictedSyntax(
     docUrl: 'https://eslint.org/docs/latest/rules/no-restricted-syntax',
   },
   {
-    message: 'Logic is not allowed inside functions.',
-    name: 'no-inner-logic',
-    selector: functionSelectors.map((d) => `${d} BinaryExpression`),
+    message: 'Binary expressions are not allowed.',
+    name: 'no-binary-expressions',
+    selector: 'BinaryExpression',
     docUrl: 'https://eslint.org/docs/latest/rules/no-restricted-syntax',
   },
   {
@@ -28,18 +28,4 @@ const noRestrictedSyntax = createNoRestrictedSyntax(
   }
 );
 
-export default <Linter.Config[]>[
-  functional.configs.off,
-  noRestrictedSyntax.configs.recommended,
-  {
-    rules: {
-      'functional/no-loop-statements': 'error',
-      'functional/prefer-property-signatures': [
-        'error',
-        {
-          ignoreIfReadonlyWrapped: true,
-        },
-      ],
-    },
-  },
-];
+export default [...base, noRestrictedSyntax.configs.recommended] as Linter.Config[];

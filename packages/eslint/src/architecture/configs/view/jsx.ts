@@ -10,7 +10,7 @@ const noRestrictedSyntax = createNoRestrictedSyntax(
     name: 'no-inner-variables',
     selector: [
       ...functionSelectors.map((d) => `${d} VariableDeclaration`),
-      ...functionSelectors.map((d) => `${d} ArrowFunctionExpression`),
+      ...functionSelectors.map((d) => `${d} FunctionDeclaration`),
     ],
     docUrl: 'https://eslint.org/docs/latest/rules/no-restricted-syntax',
   },

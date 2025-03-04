@@ -1,7 +1,7 @@
 {
   "name": "@tiagojacinto/prettier-config",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -24,5 +24,9 @@
   "devDependencies": {
     "prettier": "3.5.2",
     "@types/ramda": "^0.30.2"
+  },
+  "peerDependencies": {
+    "prettier-plugin-tailwindcss": "0.x",
+    "prettier-plugin-svelte": "3.x"
   }
 }

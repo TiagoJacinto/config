@@ -1,7 +1,5 @@
-import base from './configs/base.js';
+import configs from './configs/index.js';
 
 export default {
-  configs: {
-    base,
-  },
+  configs,
 };

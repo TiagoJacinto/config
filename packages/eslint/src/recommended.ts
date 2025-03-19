@@ -1,5 +1,12 @@
-import { LanguageOptions, Options, PluginConfig, PluginOption } from './types.js';
-import { map, mergeDeepLeft } from 'ramda';
+import {
+  LanguageOptions,
+  LanguagePluginOptions,
+  Options,
+  PluginConfig,
+  PluginOption,
+  PluginOptions,
+} from './types.js';
+import { mergeDeepLeft } from 'ramda';
 import sonar from './sonar.js';
 import javascript from './javascript.js';
 import typescript from './typescript.js';
@@ -10,18 +17,23 @@ import { isPrettierAvailable } from './lib/env.js';
 import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
 import react from './react/index.js';
+import perfectionist from './perfectionist/index.js';
 
 type Falsy = null | undefined | false | '' | 0 | 0n;
 
 const files = (...extensions: (string | Falsy)[]) =>
   extensions.filter(Boolean).length > 0 ? [`**/*.{${extensions.join(',')}}`] : [];
 
-export default (options: Options = {}) => {
+export default (options: Options) => {
   function mergeOptions() {
-    const { ratios, extensions, plugins } = mergeDeepLeft(options, defaultOptions);
+    const { ratios, runtimeEnvironment, extensions, plugins } = mergeDeepLeft(
+      options,
+      defaultOptions
+    );
 
     return {
       ratios,
+      runtimeEnvironment,
       plugins: {
         javascript: mergePluginOptions({
           plugin: plugins.languages.javascript,
@@ -38,7 +50,7 @@ export default (options: Options = {}) => {
           },
         }),
         svelte: mergePluginOptions<
-          LanguageOptions & {
+          LanguagePluginOptions & {
             svelteConfig?: Config;
           }
         >({
@@ -62,7 +74,7 @@ export default (options: Options = {}) => {
     };
   }
 
-  const { plugins, ratios } = mergeOptions();
+  const { plugins, runtimeEnvironment, ratios } = mergeOptions();
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
@@ -80,36 +92,26 @@ export default (options: Options = {}) => {
         },
       },
     },
-    {
-      files: [
-        ...(plugins.javascript?.files ?? []),
-        ...(plugins.typescript?.files ?? []),
-        ...(plugins.svelte?.files ?? []),
-        ...(plugins.react?.files ?? []),
-      ],
-      plugins: {
-        'import-helpers': importHelpers,
-      },
-      rules: {
-        'import-helpers/order-imports': [
-          'warn',
-          {
-            newlinesBetween: 'always',
-            groups: ['module', ['parent', 'sibling'], 'index'],
-            alphabetize: { order: 'asc', ignoreCase: true },
-          },
+    ...resolvePlugin({
+      pluginConfig: {
+        files: [
+          ...(plugins.javascript?.files ?? []),
+          ...(plugins.typescript?.files ?? []),
+          ...(plugins.svelte?.files ?? []),
+          ...(plugins.react?.files ?? []),
         ],
       },
-    },
-    ...resolveLanguagePlugin({
+      base: perfectionist.configs.recommended(runtimeEnvironment),
+    }),
+    ...resolvePlugin({
       pluginConfig: plugins.javascript,
       base: javascript,
     }),
-    ...resolveLanguagePlugin({
+    ...resolvePlugin({
       pluginConfig: plugins.typescript,
       base: typescript as Linter.Config[],
     }),
-    ...resolveLanguagePlugin({
+    ...resolvePlugin({
       pluginConfig: plugins.svelte,
       base: svelte.configs.base,
       configure(config, options) {
@@ -119,14 +121,14 @@ export default (options: Options = {}) => {
         return config;
       },
     }),
-    ...resolveLanguagePlugin({
+    ...resolvePlugin({
       pluginConfig: plugins.react,
       base: react.configs.base,
     }),
   ] satisfies Linter.Config[];
 };
 
-function mergePluginOptions<T extends object>({
+function mergePluginOptions<T extends PluginOptions>({
   plugin,
   base,
 }: {
@@ -140,7 +142,7 @@ function mergePluginOptions<T extends object>({
   return mergeDeepLeft(plugin, base) as unknown as T;
 }
 
-function resolveLanguagePlugin<T extends LanguageOptions>({
+function resolvePlugin<T extends PluginOptions>({
   pluginConfig,
   base,
   configure,

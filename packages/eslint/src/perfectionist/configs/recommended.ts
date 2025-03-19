@@ -1,10 +1,6 @@
 import { Linter } from 'eslint';
 import perfectionist from 'eslint-plugin-perfectionist';
 
-const defaultOptions = {
-  newlinesBetween: 'always',
-};
-
 const defaultObjectTypeOptions = {
   groups: ['index-signature', 'top-property', 'property', 'bottom-property', 'method'],
   customGroups: [
@@ -29,29 +25,29 @@ export default (environment: string) =>
         'perfectionist/sort-objects': [
           'error',
           {
-            ...defaultOptions,
-            group: ['property', 'method'],
+            newlinesBetween: 'always',
+            groups: ['property', 'method'],
           },
         ],
         'perfectionist/sort-interfaces': [
           'error',
           {
-            ...defaultOptions,
+            newlinesBetween: 'always',
             ...defaultObjectTypeOptions,
           },
         ],
         'perfectionist/sort-object-types': [
           'error',
           {
-            ...defaultOptions,
+            newlinesBetween: 'always',
             ...defaultObjectTypeOptions,
           },
         ],
         'perfectionist/sort-union-types': [
           'error',
           {
-            ...defaultOptions,
-            group: [
+            newlinesBetween: 'always',
+            groups: [
               // Needs to be in this order
               'keyword',
               'operator',
@@ -76,7 +72,7 @@ export default (environment: string) =>
         'perfectionist/sort-intersection-types': [
           'error',
           {
-            ...defaultOptions,
+            newlinesBetween: 'always',
             // Needs to be in this order
             // nullish
             // literal
@@ -97,12 +93,17 @@ export default (environment: string) =>
             ],
           },
         ],
+        'perfectionist/sort-imports': [
+          'error',
+          {
+            newlinesBetween: 'always',
+            environment,
+          },
+        ],
         'perfectionist/sort-named-imports': [
           'error',
           {
-            ...defaultOptions,
             groupKind: 'types-first',
-            environment,
           },
         ],
       },

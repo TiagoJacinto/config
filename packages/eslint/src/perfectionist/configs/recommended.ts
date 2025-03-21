@@ -107,6 +107,8 @@ function resolveCustomGroups(customGroups: GroupOption[]) {
         });
       }
 
+      if (!group.orderBy) continue;
+
       result.push({
         type: group.orderBy,
         selector: group.name,
@@ -210,34 +212,34 @@ const sort = ({
 //   ],
 // });
 
-// console.dir(
-//   sort({
-//     newlinesBetween: 'always',
-//     groups: [
-//       'index-signature',
-//       {
-//         type: 'selector',
-//         name: 'property',
-//         custom: {
-//           name: 'top-property',
-//           elementNamePattern: '^(?:id|name)$',
-//         },
-//       },
-//       'property',
-//       {
-//         type: 'selector',
-//         name: 'property',
-//         custom: {
-//           name: 'bottom-property',
-//           elementNamePattern: 'At',
-//         },
-//       },
-//     ],
-//   }),
-//   {
-//     depth: Infinity,
-//   }
-// );
+console.dir(
+  sort({
+    newlinesBetween: 'always',
+    groups: [
+      'index-signature',
+      {
+        type: 'selector',
+        name: 'property',
+        custom: {
+          name: 'top-property',
+          elementNamePattern: '^(?:id|name)$',
+        },
+      },
+      'property',
+      {
+        type: 'selector',
+        name: 'property',
+        custom: {
+          name: 'bottom-property',
+          elementNamePattern: 'At',
+        },
+      },
+    ],
+  }),
+  {
+    depth: Infinity,
+  }
+);
 
 const config = (environment: string): Linter.Config[] => [
   {

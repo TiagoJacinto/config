@@ -57,7 +57,7 @@ function resolveGroups(options: Options & { groups: GroupOption[] }) {
           continue;
         }
 
-        result.push(group.name);
+        result.push(group.custom ? group.custom.name : group.name);
         continue;
       }
 

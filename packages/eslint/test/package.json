@@ -5,6 +5,6 @@
   },
   "devDependencies": {
     "eslint": "^9.21.0",
-    "@tiagojacinto/eslint-config": "file:.."
+    "@tiagojacinto/eslint-config": "workspace:*"
   }
 }

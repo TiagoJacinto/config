@@ -2,6 +2,7 @@ import { Linter } from 'eslint';
 import perfectionist from 'eslint-plugin-perfectionist';
 import { RequireOneOrNone } from 'type-fest';
 import { withNewlinesBetween } from '../utils/withNewlinesBetween.js';
+import { omit } from 'ramda';
 
 type Options = {
   newlinesBetween?: 'ignore' | 'always' | 'never';
@@ -99,7 +100,7 @@ function resolveCustomGroups(customGroups: GroupOption[]) {
 
       if (group.custom) {
         result.push({
-          ...group.custom,
+          ...omit(['name'], group.custom),
           type: group.orderBy,
           selector: group.name,
           groupName: group.custom.name,
@@ -209,9 +210,34 @@ const sort = ({
 //   ],
 // });
 
-// console.dir(test, {
-//   depth: Infinity,
-// });
+// console.dir(
+//   sort({
+//     newlinesBetween: 'always',
+//     groups: [
+//       'index-signature',
+//       {
+//         type: 'selector',
+//         name: 'property',
+//         custom: {
+//           name: 'top-property',
+//           elementNamePattern: '^(?:id|name)$',
+//         },
+//       },
+//       'property',
+//       {
+//         type: 'selector',
+//         name: 'property',
+//         custom: {
+//           name: 'bottom-property',
+//           elementNamePattern: 'At',
+//         },
+//       },
+//     ],
+//   }),
+//   {
+//     depth: Infinity,
+//   }
+// );
 
 const config = (environment: string): Linter.Config[] => [
   {
@@ -236,12 +262,7 @@ const config = (environment: string): Linter.Config[] => [
           newlinesBetween: 'always',
         },
       ],
-      'perfectionist/sort-decorators': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
+      'perfectionist/sort-decorators': ['warn'],
       'perfectionist/sort-enums': [
         'warn',
         {
@@ -261,25 +282,9 @@ const config = (environment: string): Linter.Config[] => [
           groupKind: 'types-first',
         },
       ],
-      'perfectionist/sort-exports': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-named-exports': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-heritage-clauses': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-
+      'perfectionist/sort-exports': ['warn'],
+      'perfectionist/sort-named-exports': ['warn'],
+      'perfectionist/sort-heritage-clauses': ['warn'],
       'perfectionist/sort-objects': [
         'warn',
         sort({
@@ -363,18 +368,8 @@ const config = (environment: string): Linter.Config[] => [
           newlinesBetween: 'always',
         },
       ],
-      'perfectionist/sort-switch-case': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-variable-declarations': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
+      'perfectionist/sort-switch-case': ['warn'],
+      'perfectionist/sort-variable-declarations': ['warn'],
       'perfectionist/sort-jsx-props': [
         'warn',
         {

@@ -69,7 +69,7 @@ function resolveGroups(options: Options & { groups: GroupOption[] }) {
     return result;
   };
 
-  return recursive(withNewlinesBetween(options.groups, options.newlinesBetween));
+  return recursive(withNewlinesBetween(options.groups, options.newlinesBetween ?? 'ignore'));
 }
 
 function resolveCustomGroups(customGroups: GroupOption[]) {

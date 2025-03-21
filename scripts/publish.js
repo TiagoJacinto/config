@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const { input, checkbox, select } = require('@inquirer/prompts');
 
 /** @typedef {{name: string, version: string, scripts?:Record<string,string>}} PackageJson */
-/** @typedef {{cwd: string, currentVersion:string, newVersion: string, packageJsonPath: string, currentPackageJson: PackageJson, newPackageJson: PackageJson}} PackagesConfiguration */
+/** @typedef {{cwd: string, currentVersion:string, newVersion: string, packageJsonPath: string, packageJson: PackageJson, newPackageJson: PackageJson}} PackagesConfiguration */
 
 const askForCommitMessage = () =>
   input({
@@ -52,8 +52,9 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
 
       execSync('pnpm install', { stdio: 'inherit', cwd });
 
-      if (packageJson.scripts && 'build' in packageJson.scripts) {
-        execSync('pnpm run build', { stdio: 'inherit', cwd });
+      if (packageJson.scripts) {
+        if ('build' in packageJson.scripts) execSync('pnpm run build', { stdio: 'inherit', cwd });
+        if ('test' in packageJson.scripts) execSync('pnpm run test', { stdio: 'inherit', cwd });
       }
 
       updatePackageJson(packageJsonPath, { ...packageJson, version });
@@ -94,7 +95,7 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
           currentVersion: packageJson.version,
           newVersion: version,
           packageJsonPath,
-          currentPackageJson: packageJson,
+          packageJson,
           newPackageJson: {
             ...packageJson,
             version,
@@ -103,13 +104,14 @@ const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ ne
       }
 
       for (const pkg of selectedPackages) {
-        const { cwd, currentPackageJson, packageJsonPath, newPackageJson } =
+        const { cwd, packageJson, packageJsonPath, newPackageJson } =
           /**@type {PackagesConfiguration}*/ (packagesConfiguration[pkg]);
 
         execSync('pnpm install', { stdio: 'inherit', cwd });
 
-        if (currentPackageJson.scripts && 'build' in currentPackageJson.scripts) {
-          execSync('pnpm run build', { stdio: 'inherit', cwd });
+        if (packageJson.scripts) {
+          if ('build' in packageJson.scripts) execSync('pnpm run build', { stdio: 'inherit', cwd });
+          if ('test' in packageJson.scripts) execSync('pnpm run test', { stdio: 'inherit', cwd });
         }
 
         updatePackageJson(packageJsonPath, newPackageJson);

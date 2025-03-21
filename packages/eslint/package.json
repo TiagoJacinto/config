@@ -16,8 +16,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test:build": "pnpm run build && cd ./test && pnpm i && pnpm run lint",
-    "test:lint": "cd ./test && pnpm run lint"
+    "test": "cd ./test && pnpm run lint",
+    "test:build": "pnpm run build && cd ./test && pnpm i && pnpm run lint"
   },
   "dependencies": {
     "@eslint/js": "9.19.0",

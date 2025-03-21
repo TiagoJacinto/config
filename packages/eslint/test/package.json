@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "@tiagojacinto/eslint-config": "file:.."
+  }
+}

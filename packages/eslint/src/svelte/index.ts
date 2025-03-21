@@ -1,11 +1,7 @@
-import base from './configs/base.js';
-import withProjectService from './extensions/withProjectService.js';
+import configs from './configs/index.js';
+import extensions from './extensions/index.js';
 
 export default {
-  configs: {
-    base,
-  },
-  extensions: {
-    withProjectService,
-  },
+  configs,
+  extensions,
 };

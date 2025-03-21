@@ -1,15 +1,9 @@
-import base from './configs/base.js';
-import defaultDepConstraints from './constants/defaultDepConstraints.js';
-import withModuleBoundaries from './extensions/withModuleBoundaries.js';
+import configs from './configs/index.js';
+import constants from './constants/index.js';
+import extensions from './extensions/index.js';
 
 export default {
-  configs: {
-    base,
-  },
-  constants: {
-    defaultDepConstraints,
-  },
-  extensions: {
-    withModuleBoundaries,
-  },
+  configs,
+  constants,
+  extensions,
 };

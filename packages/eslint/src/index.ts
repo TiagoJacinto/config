@@ -10,6 +10,9 @@ import typescript from './typescript.js';
 import { ConfigArray } from 'typescript-eslint';
 import boundaries from './boundaries/index.js';
 import architecture from './architecture/index.js';
+import perfectionist from './perfectionist/index.js';
+import react from './react/index.js';
+import svelte from './svelte/index.js';
 
 const configs = {
   browser,
@@ -21,10 +24,13 @@ const configs = {
   typescript: typescript as ConfigArray,
 };
 
-export { nx, boundaries, configs, architecture };
+export { architecture, boundaries, nx, perfectionist, react, svelte, configs };
 export default {
-  nx,
-  boundaries,
-  configs,
   architecture,
+  boundaries,
+  nx,
+  perfectionist,
+  react,
+  svelte,
+  configs,
 };

@@ -2,7 +2,7 @@ import { Linter } from 'eslint';
 import perfectionist from 'eslint-plugin-perfectionist';
 import { RequireOneOrNone } from 'type-fest';
 import { withNewlinesBetween } from '../utils/withNewlinesBetween.js';
-import { omit } from 'ramda';
+import { isNil, omit, reject } from 'ramda';
 
 type Options = {
   newlinesBetween?: 'ignore' | 'always' | 'never';
@@ -146,7 +146,7 @@ const sort = ({
   //   .sort(([, v1], [, v2]) => v1 - v2)
   //   .map(([k]) => k);
 
-  return {
+  return reject(isNil, {
     ...rest,
     type: orderBy,
     groups:
@@ -156,7 +156,7 @@ const sort = ({
         newlinesBetween,
       }),
     customGroups: groups && resolveCustomGroups(groups),
-  };
+  });
 };
 
 // const activate = false;
@@ -300,32 +300,6 @@ const config = (environment: string): Linter.Config[] => [
           ],
         }),
       ],
-      'perfectionist/sort-interfaces': [
-        'warn',
-        sort({
-          newlinesBetween: 'always',
-          groups: [
-            'index-signature',
-            {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'top-property',
-                elementNamePattern: '^(?:id|name)$',
-              },
-            },
-            'property',
-            {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'bottom-property',
-                elementNamePattern: 'At',
-              },
-            },
-          ],
-        }),
-      ],
       'perfectionist/sort-object-types': [
         'warn',
         sort({
@@ -352,6 +326,33 @@ const config = (environment: string): Linter.Config[] => [
           ],
         }),
       ],
+      'perfectionist/sort-interfaces': [
+        'warn',
+        sort({
+          newlinesBetween: 'always',
+          groups: [
+            'index-signature',
+            {
+              type: 'selector',
+              name: 'property',
+              custom: {
+                name: 'top-property',
+                elementNamePattern: '^(?:id|name)$',
+              },
+            },
+            'property',
+            {
+              type: 'selector',
+              name: 'property',
+              custom: {
+                name: 'bottom-property',
+                elementNamePattern: 'At',
+              },
+            },
+          ],
+        }),
+      ],
+
       'perfectionist/sort-modules': [
         'warn',
         {

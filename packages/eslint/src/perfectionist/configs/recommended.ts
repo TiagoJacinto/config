@@ -1,135 +1,71 @@
 import { Linter } from 'eslint';
 import perfectionist from 'eslint-plugin-perfectionist';
-import { RequireOneOrNone } from 'type-fest';
-import { withNewlinesBetween } from '../utils/withNewlinesBetween.js';
-import { isNil, omit, reject } from 'ramda';
+import { UnknownRecord } from 'type-fest';
+import {
+  NewLinesBetween,
+  NewLinesBetweenSeparator,
+  withNewlinesBetween,
+} from '../utils/withNewlinesBetween.js';
 
-type Options = {
-  newlinesBetween?: 'ignore' | 'always' | 'never';
-  orderBy?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted';
+const cleanse = (obj: UnknownRecord) => {
+  const result = obj;
+  for (const v in result) {
+    if (typeof result[v] === 'object' && result[v] !== null) cleanse(result[v] as UnknownRecord);
+    else if (result[v] === undefined) delete result[v];
+  }
+  return result;
 };
 
-type SelectorGroup = Options &
-  RequireOneOrNone<
-    {
-      type: 'selector';
-      name: string;
-      many: string[];
-      custom: {
-        [key: string]: unknown;
-        name: string;
-      };
-    },
-    'many' | 'custom'
-  >;
+type Group = string | NewLinesBetweenSeparator;
 
-type GroupOption =
-  | string
-  | string[]
-  | SelectorGroup
+type GroupDefinition =
+  | Group
   | {
-      type: 'custom';
-      groups: GroupOption[];
-      newlinesBetween: never;
-      orderBy?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted';
-    }
-  | (Options & {
-      type: 'custom';
-      groups: (string | SelectorGroup)[];
-    });
+      groups: GroupDefinition[];
+      newlinesBetween?: NewLinesBetween;
+    };
 
-function resolveGroups(options: Options & { groups: GroupOption[] }) {
-  type SeparatedGroupOption = GroupOption | { newlinesBetween: Options['newlinesBetween'] };
+type GroupsDefinition = GroupDefinition | GroupDefinition[];
 
-  const recursive = (groups: SeparatedGroupOption[]) => {
-    type Group = string | string[] | { newlinesBetween: Options['newlinesBetween'] };
-    const result: Group[] = [];
+function resolveGroups(groups: GroupsDefinition[]) {
+  type Groups = Group | Group[];
+  const recursive = (groups: GroupsDefinition[]) => {
+    const result: Groups[] = [];
 
     for (const group of groups) {
-      if (typeof group === 'string' || !('type' in group) || Array.isArray(group)) {
-        result.push(group);
+      if (Array.isArray(group)) {
+        result.push(
+          group.flatMap((g) =>
+            typeof g === 'object' && 'groups' in g
+              ? recursive(withNewlinesBetween(g.groups, g.newlinesBetween ?? 'ignore')).flat()
+              : g
+          )
+        );
         continue;
       }
 
-      if (group.type === 'selector') {
-        if (group.many) {
-          result.push(...withNewlinesBetween(group.many, group.newlinesBetween ?? 'ignore'));
-          continue;
-        }
-
-        result.push(group.custom ? group.custom.name : group.name);
+      if (typeof group === 'object' && 'groups' in group) {
+        result.push(
+          ...recursive(withNewlinesBetween(group.groups, group.newlinesBetween ?? 'ignore'))
+        );
         continue;
       }
 
-      if (group.type === 'custom') {
-        result.push(...recursive(group.groups));
-      }
+      result.push(group);
     }
 
     return result;
   };
 
-  return recursive(withNewlinesBetween(options.groups, options.newlinesBetween ?? 'ignore'));
-}
-
-function resolveCustomGroups(customGroups: GroupOption[]) {
-  type CustomGroup = {
-    type?: 'alphabetical' | 'natural' | 'line-length' | 'unsorted';
-    groupName: string;
-    selector: string;
-    elementNamePattern?: string;
-  };
-
-  const result: CustomGroup[] = [];
-
-  for (const group of customGroups) {
-    if (typeof group === 'string' || Array.isArray(group)) continue;
-
-    if (group.type === 'selector') {
-      if (group.many) {
-        group.many.forEach((name) => {
-          result.push({
-            type: group.orderBy,
-            selector: group.name,
-            groupName: name,
-            elementNamePattern: `^${name}$`,
-          });
-        });
-        continue;
-      }
-
-      if (group.custom) {
-        result.push({
-          ...omit(['name'], group.custom),
-          type: group.orderBy,
-          selector: group.name,
-          groupName: group.custom.name,
-        });
-      }
-
-      if (!group.orderBy) continue;
-
-      result.push({
-        type: group.orderBy,
-        selector: group.name,
-        groupName: group.name,
-      });
-      continue;
-    }
-
-    result.push(...resolveCustomGroups(group.groups));
-  }
-
-  return result;
+  return recursive(groups);
 }
 
 const sort = ({
   newlinesBetween,
   groups,
-  orderBy,
   ...rest
-}: Options & {
-  groups?: GroupOption[];
+}: {
+  groups?: GroupsDefinition[];
   [k: string]: unknown;
 }) => {
   // priorities: {
@@ -146,16 +82,9 @@ const sort = ({
   //   .sort(([, v1], [, v2]) => v1 - v2)
   //   .map(([k]) => k);
 
-  return reject(isNil, {
+  return cleanse({
     ...rest,
-    type: orderBy,
-    groups:
-      groups &&
-      resolveGroups({
-        groups,
-        newlinesBetween,
-      }),
-    customGroups: groups && resolveCustomGroups(groups),
+    groups: groups && resolveGroups(groups),
   });
 };
 
@@ -212,35 +141,6 @@ const sort = ({
 //   ],
 // });
 
-// console.dir(
-//   sort({
-//     newlinesBetween: 'always',
-//     groups: [
-//       'index-signature',
-//       {
-//         type: 'selector',
-//         name: 'property',
-//         custom: {
-//           name: 'top-property',
-//           elementNamePattern: '^(?:id|name)$',
-//         },
-//       },
-//       'property',
-//       {
-//         type: 'selector',
-//         name: 'property',
-//         custom: {
-//           name: 'bottom-property',
-//           elementNamePattern: 'At',
-//         },
-//       },
-//     ],
-//   }),
-//   {
-//     depth: Infinity,
-//   }
-// );
-
 const config = (environment: string): Linter.Config[] => [
   {
     plugins: {
@@ -260,9 +160,54 @@ const config = (environment: string): Linter.Config[] => [
       ],
       'perfectionist/sort-classes': [
         'warn',
-        {
-          newlinesBetween: 'always',
-        },
+        sort({
+          groups: [
+            'index-signature',
+            'static-property',
+            'static-block',
+            ['protected-property', 'protected-accessor-property'],
+            ['private-property', 'private-accessor-property'],
+            ['property', 'accessor-property'],
+            'constructor',
+            'static-method',
+            'protected-method',
+            'private-method',
+            'method',
+            ['get-method', 'set-method'],
+            'unknown',
+          ],
+          customGroups: [
+            {
+              selector: 'static-block',
+            },
+            {
+              selector: 'method',
+              modifier: 'static',
+            },
+            {
+              selector: 'method',
+              modifier: 'protected',
+            },
+            {
+              selector: 'method',
+              modifier: 'private',
+            },
+            {
+              selector: 'method',
+            },
+            {
+              selector: 'get-method',
+            },
+            {
+              selector: 'set-method',
+            },
+          ].map(({ selector, modifier }) => ({
+            groupName: `${modifier}-${selector}`,
+            selector,
+            modifiers: modifier && [modifier],
+            newlinesInside: 'always',
+          })),
+        }),
       ],
       'perfectionist/sort-decorators': ['warn'],
       'perfectionist/sort-enums': [
@@ -291,11 +236,22 @@ const config = (environment: string): Linter.Config[] => [
         'warn',
         sort({
           newlinesBetween: 'always',
-          groups: [
+          groups: ['top-property', 'property', 'bottom-property'],
+          customGroups: [
             {
-              type: 'selector',
-              name: 'property',
-              orderBy: 'natural',
+              groupName: 'top-property',
+              selector: 'property',
+              elementNamePattern: '^(?:id|name)$',
+            },
+            {
+              type: 'natural',
+              groupName: 'property',
+              selector: 'property',
+            },
+            {
+              groupName: 'bottom-property',
+              selector: 'property',
+              elementNamePattern: 'At',
             },
           ],
         }),
@@ -304,24 +260,22 @@ const config = (environment: string): Linter.Config[] => [
         'warn',
         sort({
           newlinesBetween: 'always',
-          groups: [
-            'index-signature',
+          groups: ['index-signature', 'top-property', 'property', 'bottom-property'],
+          customGroups: [
             {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'top-property',
-                elementNamePattern: '^(?:id|name)$',
-              },
+              groupName: 'top-property',
+              selector: 'property',
+              elementNamePattern: '^(?:id|name)$',
             },
-            'property',
             {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'bottom-property',
-                elementNamePattern: 'At',
-              },
+              type: 'natural',
+              groupName: 'property',
+              selector: 'property',
+            },
+            {
+              groupName: 'bottom-property',
+              selector: 'property',
+              elementNamePattern: 'At',
             },
           ],
         }),
@@ -330,29 +284,26 @@ const config = (environment: string): Linter.Config[] => [
         'warn',
         sort({
           newlinesBetween: 'always',
-          groups: [
-            'index-signature',
+          groups: ['index-signature', 'top-property', 'property', 'bottom-property'],
+          customGroups: [
             {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'top-property',
-                elementNamePattern: '^(?:id|name)$',
-              },
+              groupName: 'top-property',
+              selector: 'property',
+              elementNamePattern: '^(?:id|name)$',
             },
-            'property',
             {
-              type: 'selector',
-              name: 'property',
-              custom: {
-                name: 'bottom-property',
-                elementNamePattern: 'At',
-              },
+              type: 'natural',
+              groupName: 'property',
+              selector: 'property',
+            },
+            {
+              groupName: 'bottom-property',
+              selector: 'property',
+              elementNamePattern: 'At',
             },
           ],
         }),
       ],
-
       'perfectionist/sort-modules': [
         'warn',
         {

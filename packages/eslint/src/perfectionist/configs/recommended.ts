@@ -60,14 +60,7 @@ function resolveGroups(groups: GroupsDefinition[]) {
   return recursive(groups);
 }
 
-const sort = ({
-  newlinesBetween,
-  groups,
-  ...rest
-}: {
-  groups?: GroupsDefinition[];
-  [k: string]: unknown;
-}) => {
+const sort = ({ groups, ...rest }: { groups?: GroupsDefinition[]; [k: string]: unknown }) => {
   // priorities: {
   //   method: {
   //     tiago: 3,
@@ -87,59 +80,6 @@ const sort = ({
     groups: groups && resolveGroups(groups),
   });
 };
-
-// const activate = false;
-
-// const test = sortByPriority({
-
-//   newlinesBetween: 'always',
-//   groups: [
-//     {
-//       type: 'selector',
-//       name: 'property',
-//       orderBy: 'natural',
-//     },
-//     // 'property',
-//     ...((activate
-//       ? [
-//           {
-//             type: 'selector',
-//             name: 'method',
-//             many: ['hello', 'world', 'tiago'],
-//           },
-//           {
-//             type: 'selector',
-//             name: 'method',
-//             many: ['hello1', 'world1', 'tiago1'],
-//           },
-//           {
-//             type: 'custom',
-//             groups: [
-//               {
-//                 type: 'custom',
-//                 groups: [
-//                   {
-//                     type: 'custom',
-//                     groups: [
-//                       {
-//                         type: 'selector',
-//                         name: 'method',
-//                         many: ['nested', 'nested2'],
-//                         newlinesBetween: 'never',
-//                       },
-//                     ],
-//                     newlinesBetween: 'never',
-//                   },
-//                 ],
-//                 newlinesBetween: 'never',
-//               },
-//             ],
-//             newlinesBetween: 'never',
-//           },
-//         ]
-//       : []) as GroupOption[]),
-//   ],
-// });
 
 const config = (environment: string): Linter.Config[] => [
   {
@@ -161,6 +101,7 @@ const config = (environment: string): Linter.Config[] => [
       'perfectionist/sort-classes': [
         'warn',
         sort({
+          newlinesBetween: 'always',
           groups: [
             'index-signature',
             'static-property',
@@ -202,7 +143,7 @@ const config = (environment: string): Linter.Config[] => [
               selector: 'set-method',
             },
           ].map(({ selector, modifier }) => ({
-            groupName: `${modifier}-${selector}`,
+            groupName: modifier ? `${modifier}-${selector}` : selector,
             selector,
             modifiers: modifier && [modifier],
             newlinesInside: 'always',
@@ -383,5 +324,60 @@ const config = (environment: string): Linter.Config[] => [
     },
   },
 ];
+
+console.dir(
+  sort({
+    newlinesBetween: 'always',
+    groups: [
+      'index-signature',
+      'static-property',
+      'static-block',
+      ['protected-property', 'protected-accessor-property'],
+      ['private-property', 'private-accessor-property'],
+      ['property', 'accessor-property'],
+      'constructor',
+      'static-method',
+      'protected-method',
+      'private-method',
+      'method',
+      ['get-method', 'set-method'],
+      'unknown',
+    ],
+    customGroups: [
+      {
+        selector: 'static-block',
+      },
+      {
+        selector: 'method',
+        modifier: 'static',
+      },
+      {
+        selector: 'method',
+        modifier: 'protected',
+      },
+      {
+        selector: 'method',
+        modifier: 'private',
+      },
+      {
+        selector: 'method',
+      },
+      {
+        selector: 'get-method',
+      },
+      {
+        selector: 'set-method',
+      },
+    ].map(({ selector, modifier }) => ({
+      groupName: modifier ? `${modifier}-${selector}` : selector,
+      selector,
+      modifiers: modifier && [modifier],
+      newlinesInside: 'always',
+    })),
+  }),
+  {
+    depth: Infinity,
+  }
+);
 
 export default config;

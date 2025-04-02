@@ -81,7 +81,7 @@ const sort = ({ groups, ...rest }: { groups?: GroupsDefinition[]; [k: string]: u
   });
 };
 
-const config = (environment: string): Linter.Config[] => [
+const config = ({ environment }: { environment: string }): Linter.Config[] => [
   {
     plugins: {
       perfectionist,
@@ -92,16 +92,10 @@ const config = (environment: string): Linter.Config[] => [
       },
     },
     rules: {
-      'perfectionist/sort-array-includes': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
+      'perfectionist/sort-array-includes': 'warn',
       'perfectionist/sort-classes': [
         'warn',
         sort({
-          newlinesBetween: 'always',
           groups: [
             'index-signature',
             'static-property',
@@ -111,8 +105,6 @@ const config = (environment: string): Linter.Config[] => [
             ['property', 'accessor-property'],
             'constructor',
             'static-method',
-            'protected-method',
-            'private-method',
             'method',
             ['get-method', 'set-method'],
             'unknown',
@@ -150,17 +142,11 @@ const config = (environment: string): Linter.Config[] => [
           })),
         }),
       ],
-      'perfectionist/sort-decorators': ['warn'],
-      'perfectionist/sort-enums': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
+      'perfectionist/sort-decorators': 'warn',
+      'perfectionist/sort-enums': 'warn',
       'perfectionist/sort-imports': [
         'warn',
         {
-          newlinesBetween: 'always',
           environment,
         },
       ],
@@ -176,7 +162,6 @@ const config = (environment: string): Linter.Config[] => [
       'perfectionist/sort-objects': [
         'warn',
         sort({
-          newlinesBetween: 'always',
           groups: ['top-property', 'property', 'bottom-property'],
           customGroups: [
             {
@@ -200,7 +185,6 @@ const config = (environment: string): Linter.Config[] => [
       'perfectionist/sort-object-types': [
         'warn',
         sort({
-          newlinesBetween: 'always',
           groups: ['index-signature', 'top-property', 'property', 'bottom-property'],
           customGroups: [
             {
@@ -224,7 +208,6 @@ const config = (environment: string): Linter.Config[] => [
       'perfectionist/sort-interfaces': [
         'warn',
         sort({
-          newlinesBetween: 'always',
           groups: ['index-signature', 'top-property', 'property', 'bottom-property'],
           customGroups: [
             {
@@ -245,36 +228,14 @@ const config = (environment: string): Linter.Config[] => [
           ],
         }),
       ],
-      'perfectionist/sort-modules': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-maps': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-sets': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
-      'perfectionist/sort-switch-case': ['warn'],
-      'perfectionist/sort-variable-declarations': ['warn'],
-      'perfectionist/sort-jsx-props': [
-        'warn',
-        {
-          newlinesBetween: 'always',
-        },
-      ],
+      'perfectionist/sort-maps': 'warn',
+      'perfectionist/sort-sets': 'warn',
+      'perfectionist/sort-switch-case': 'warn',
+      'perfectionist/sort-variable-declarations': 'warn',
+      'perfectionist/sort-jsx-props': 'warn',
       'perfectionist/sort-union-types': [
         'warn',
         {
-          newlinesBetween: 'always',
           groups: [
             // Needs to be in this order
             'keyword',
@@ -300,7 +261,6 @@ const config = (environment: string): Linter.Config[] => [
       'perfectionist/sort-intersection-types': [
         'warn',
         {
-          newlinesBetween: 'always',
           // Needs to be in this order
           // nullish
           // literal
@@ -324,60 +284,5 @@ const config = (environment: string): Linter.Config[] => [
     },
   },
 ];
-
-console.dir(
-  sort({
-    newlinesBetween: 'always',
-    groups: [
-      'index-signature',
-      'static-property',
-      'static-block',
-      ['protected-property', 'protected-accessor-property'],
-      ['private-property', 'private-accessor-property'],
-      ['property', 'accessor-property'],
-      'constructor',
-      'static-method',
-      'protected-method',
-      'private-method',
-      'method',
-      ['get-method', 'set-method'],
-      'unknown',
-    ],
-    customGroups: [
-      {
-        selector: 'static-block',
-      },
-      {
-        selector: 'method',
-        modifier: 'static',
-      },
-      {
-        selector: 'method',
-        modifier: 'protected',
-      },
-      {
-        selector: 'method',
-        modifier: 'private',
-      },
-      {
-        selector: 'method',
-      },
-      {
-        selector: 'get-method',
-      },
-      {
-        selector: 'set-method',
-      },
-    ].map(({ selector, modifier }) => ({
-      groupName: modifier ? `${modifier}-${selector}` : selector,
-      selector,
-      modifiers: modifier && [modifier],
-      newlinesInside: 'always',
-    })),
-  }),
-  {
-    depth: Infinity,
-  }
-);
 
 export default config;

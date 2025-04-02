@@ -101,7 +101,7 @@ export default (options: Options) => {
           ...(plugins.react?.files ?? []),
         ],
       },
-      base: perfectionist.configs.recommended(runtimeEnvironment),
+      base: perfectionist.configs.recommended({ environment: runtimeEnvironment }),
     }),
     ...resolvePlugin({
       pluginConfig: plugins.javascript,

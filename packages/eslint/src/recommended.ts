@@ -31,45 +31,63 @@ export default (options: Options) => {
       defaultOptions
     );
 
+    extensions.withProjectService;
+
+    const javascriptPluginOptions = mergePluginOptions({
+      plugin: plugins.languages.javascript,
+      base: {
+        files: files('js', 'mjs', 'cjs'),
+        withProjectService: extensions.withProjectService,
+      },
+    });
+
+    const typescriptPluginOptions = mergePluginOptions({
+      plugin: plugins.languages.typescript,
+      base: {
+        files: files('ts', 'mts', 'cts'),
+        withProjectService: extensions.withProjectService,
+      },
+    });
+
+    const sveltePluginOptions = mergePluginOptions<
+      LanguagePluginOptions & {
+        svelteConfig?: Config;
+      }
+    >({
+      plugin: plugins.languages.svelte,
+      base: {
+        files: files('svelte', plugins.languages.typescript && 'svelte.ts'),
+        withProjectService: extensions.withProjectService,
+      },
+    });
+
+    const reactPluginOptions = mergePluginOptions({
+      plugin: plugins.languages.react,
+      base: {
+        files: files(plugins.languages.javascript && 'jsx', plugins.languages.typescript && 'tsx'),
+        withProjectService: extensions.withProjectService,
+      },
+    });
+
     return {
       ratios,
       runtimeEnvironment,
       plugins: {
-        javascript: mergePluginOptions({
-          plugin: plugins.languages.javascript,
+        perfectionist: mergePluginOptions({
+          plugin: plugins.formatting.perfectionist,
           base: {
-            files: files('js', 'mjs', 'cjs'),
-            withProjectService: extensions.withProjectService,
+            files: [
+              ...(javascriptPluginOptions?.files ?? []),
+              ...(typescriptPluginOptions?.files ?? []),
+              ...(sveltePluginOptions?.files ?? []),
+              ...(reactPluginOptions?.files ?? []),
+            ],
           },
         }),
-        typescript: mergePluginOptions({
-          plugin: plugins.languages.typescript,
-          base: {
-            files: files('ts', 'mts', 'cts'),
-            withProjectService: extensions.withProjectService,
-          },
-        }),
-        svelte: mergePluginOptions<
-          LanguagePluginOptions & {
-            svelteConfig?: Config;
-          }
-        >({
-          plugin: plugins.languages.svelte,
-          base: {
-            files: files('svelte', plugins.languages.typescript && 'svelte.ts'),
-            withProjectService: extensions.withProjectService,
-          },
-        }),
-        react: mergePluginOptions({
-          plugin: plugins.languages.react,
-          base: {
-            files: files(
-              plugins.languages.javascript && 'jsx',
-              plugins.languages.typescript && 'tsx'
-            ),
-            withProjectService: extensions.withProjectService,
-          },
-        }),
+        javascript: javascriptPluginOptions,
+        typescript: typescriptPluginOptions,
+        svelte: sveltePluginOptions,
+        react: reactPluginOptions,
       },
     };
   }
@@ -93,14 +111,7 @@ export default (options: Options) => {
       },
     },
     ...resolvePlugin({
-      pluginConfig: {
-        files: [
-          ...(plugins.javascript?.files ?? []),
-          ...(plugins.typescript?.files ?? []),
-          ...(plugins.svelte?.files ?? []),
-          ...(plugins.react?.files ?? []),
-        ],
-      },
+      pluginConfig: plugins.perfectionist,
       base: perfectionist.configs.recommended({ environment: runtimeEnvironment }),
     }),
     ...resolvePlugin({

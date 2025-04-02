@@ -20,6 +20,9 @@ export type Options = Partial<{
     withProjectService: boolean;
   }>;
   plugins: Partial<{
+    formatting: Partial<{
+      perfectionist: PluginOption<PluginOptions>;
+    }>;
     languages: Partial<{
       javascript: PluginOption<LanguagePluginOptions>;
       typescript: PluginOption<LanguagePluginOptions>;

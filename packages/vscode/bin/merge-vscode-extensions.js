@@ -1,10 +1,15 @@
 #!/usr/bin/env node
-import { input } from '@inquirer/prompts';
-import fs from 'fs';
-import extensions from '../extensions.json';
-import deepMerge from 'deepmerge';
-import { map, uniq } from 'ramda';
-import { isPromise } from 'util/types';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const prompts_1 = require("@inquirer/prompts");
+const fs_1 = __importDefault(require("fs"));
+const extensions_json_1 = __importDefault(require("../extensions.json"));
+const deepmerge_1 = __importDefault(require("deepmerge"));
+const ramda_1 = require("ramda");
+const types_1 = require("util/types");
 const isPromiseLike = (maybePromise) => maybePromise !== null &&
     typeof maybePromise === 'object' &&
     'then' in maybePromise &&
@@ -13,7 +18,7 @@ function defineTryFn(transformer) {
     function tryWrapper(tryFn) {
         try {
             const result = tryFn();
-            if (isPromise(result)) {
+            if ((0, types_1.isPromise)(result)) {
                 return result.then((data) => [data, null]).catch((e) => [null, transformer(e)]);
             }
             if (isPromiseLike(result)) {
@@ -41,21 +46,21 @@ const toError = (maybeError) => {
 };
 const tryFn = defineTryFn(toError);
 (async () => {
-    const vscodeExtensionsFilePath = await input({
+    const vscodeExtensionsFilePath = await (0, prompts_1.input)({
         message: 'Enter the path to the vscode extensions.json file:',
         default: '.vscode/extensions.json',
     });
-    if (!fs.existsSync(vscodeExtensionsFilePath)) {
-        fs.mkdirSync(vscodeExtensionsFilePath.slice(0, vscodeExtensionsFilePath.lastIndexOf('/')), {
+    if (!fs_1.default.existsSync(vscodeExtensionsFilePath)) {
+        fs_1.default.mkdirSync(vscodeExtensionsFilePath.slice(0, vscodeExtensionsFilePath.lastIndexOf('/')), {
             recursive: true,
         });
-        fs.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(extensions));
+        fs_1.default.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(extensions_json_1.default));
         return;
     }
-    const fileContent = fs.readFileSync(vscodeExtensionsFilePath, 'utf-8');
+    const fileContent = fs_1.default.readFileSync(vscodeExtensionsFilePath, 'utf-8');
     let json;
     if (fileContent.length === 0) {
-        json = extensions;
+        json = extensions_json_1.default;
     }
     else {
         const [parsed, error] = tryFn(() => JSON.parse(fileContent));
@@ -63,8 +68,8 @@ const tryFn = defineTryFn(toError);
             console.error(error);
             return;
         }
-        json = deepMerge(extensions, parsed);
+        json = (0, deepmerge_1.default)(extensions_json_1.default, parsed);
     }
-    json = map(uniq, json);
-    fs.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json));
+    json = (0, ramda_1.map)(ramda_1.uniq, json);
+    fs_1.default.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json));
 })();

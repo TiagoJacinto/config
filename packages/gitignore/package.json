@@ -1,0 +1,25 @@
+{
+  "name": "@tiagojacinto/gitignore-config",
+  "version": "0.0.1",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TiagoJacinto/config.git"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "bin/*.js",
+    "files"
+  ],
+  "bin": {
+    "generate-gitignore-config": "./bin/generate-gitignore-config.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "7.4.0"
+  }
+}

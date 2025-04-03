@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prompts_1 = require("@inquirer/prompts");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const basePath = path_1.default.join(__dirname, '../');
+const basePath = path_1.default.join(__dirname, '../files');
 const extension = '.gitignore';
 (async () => {
     const configNames = fs_1.default

@@ -4,7 +4,7 @@ import { input, checkbox } from '@inquirer/prompts';
 import fs from 'fs';
 import path from 'path';
 
-const basePath = path.join(__dirname, '../');
+const basePath = path.join(__dirname, '../files');
 const extension = '.gitignore';
 
 (async () => {

@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/vscode-config",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -15,6 +15,10 @@
   "bin": {
     "merge-vscode-extensions": "./bin/merge-vscode-extensions.js"
   },
+  "files": [
+    "bin/*.js",
+    "extensions.json"
+  ],
   "dependencies": {
     "@inquirer/prompts": "7.4.0",
     "deepmerge": "4.3.1",

@@ -8,7 +8,7 @@ import { map, uniq, flow } from 'ramda';
 import { Promisable } from 'type-fest';
 import { isPromise } from 'util/types';
 
-const isPromiseLike = <T,>(maybePromise: Promisable<T>): maybePromise is PromiseLike<T> =>
+const isPromiseLike = <T>(maybePromise: Promisable<T>): maybePromise is PromiseLike<T> =>
   maybePromise !== null &&
   typeof maybePromise === 'object' &&
   'then' in maybePromise &&
@@ -86,5 +86,5 @@ const tryFn = defineTryFn(toError);
 
   json = map(uniq, json);
 
-  fs.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json));
+  fs.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json, null, 2));
 })();

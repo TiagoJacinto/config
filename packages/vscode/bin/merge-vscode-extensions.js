@@ -71,5 +71,5 @@ const tryFn = defineTryFn(toError);
         json = (0, deepmerge_1.default)(extensions_json_1.default, parsed);
     }
     json = (0, ramda_1.map)(ramda_1.uniq, json);
-    fs_1.default.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json));
+    fs_1.default.writeFileSync(vscodeExtensionsFilePath, JSON.stringify(json, null, 2));
 })();

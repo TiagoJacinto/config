@@ -31,8 +31,6 @@ export default (options: Options) => {
       defaultOptions
     );
 
-    extensions.withProjectService;
-
     const javascriptPluginOptions = mergePluginOptions({
       plugin: plugins.languages.javascript,
       base: {

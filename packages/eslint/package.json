@@ -1,7 +1,7 @@
 {
   "name": "@tiagojacinto/eslint-config",
   "type": "module",
-  "version": "0.5.11",
+  "version": "0.5.12",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

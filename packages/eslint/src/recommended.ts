@@ -36,7 +36,7 @@ export default (options: Options) => {
     const javascriptPluginOptions = mergePluginOptions({
       plugin: plugins.languages.javascript,
       base: {
-        files: files('js', 'mjs', 'cjs'),
+        files: files('js', 'mjs', 'cjs', plugins.languages.react && 'jsx'),
         withProjectService: extensions.withProjectService,
       },
     });
@@ -44,7 +44,7 @@ export default (options: Options) => {
     const typescriptPluginOptions = mergePluginOptions({
       plugin: plugins.languages.typescript,
       base: {
-        files: files('ts', 'mts', 'cts'),
+        files: files('ts', 'mts', 'cts', plugins.languages.react && 'tsx'),
         withProjectService: extensions.withProjectService,
       },
     });

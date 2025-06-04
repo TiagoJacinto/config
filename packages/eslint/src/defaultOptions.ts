@@ -10,5 +10,8 @@ export default {
       perfectionist: false,
     },
     languages: { javascript: false, typescript: false, svelte: false, react: false },
+    testing: {
+      jest: false,
+    },
   },
 } satisfies RequiredDeep<Options>;

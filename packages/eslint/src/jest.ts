@@ -1,5 +1,6 @@
 import globals from 'globals';
 import jest from 'eslint-plugin-jest';
+import { Linter } from 'eslint';
 
 export default [
   {
@@ -14,4 +15,4 @@ export default [
       'jest/unbound-method': ['error', { ignoreStatic: true }],
     },
   },
-];
+] satisfies Linter.Config[];

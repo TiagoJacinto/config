@@ -18,6 +18,7 @@ import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
 import react from './react/index.js';
 import perfectionist from './perfectionist/index.js';
+import jest from './jest.js';
 
 type Falsy = null | undefined | false | '' | 0 | 0n;
 
@@ -82,6 +83,12 @@ export default (options: Options) => {
             ],
           },
         }),
+        jest: mergePluginOptions({
+          plugin: plugins.testing.jest,
+          base: {
+            files: files('tests/**/*'),
+          },
+        }),
         javascript: javascriptPluginOptions,
         typescript: typescriptPluginOptions,
         svelte: sveltePluginOptions,
@@ -133,6 +140,10 @@ export default (options: Options) => {
     ...resolvePlugin({
       pluginConfig: plugins.react,
       base: react.configs.base,
+    }),
+    ...resolvePlugin({
+      pluginConfig: plugins.jest,
+      base: jest,
     }),
   ] satisfies Linter.Config[];
 };

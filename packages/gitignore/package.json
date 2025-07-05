@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/gitignore-config",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -17,7 +17,7 @@
     "files"
   ],
   "bin": {
-    "generate-gitignore-config": "./bin/generate-gitignore-config.js"
+    "generate": "./bin/generate.js"
   },
   "dependencies": {
     "@inquirer/prompts": "7.4.0"

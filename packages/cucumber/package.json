@@ -1,0 +1,21 @@
+{
+  "name": "@tiagojacinto/cucumber-config",
+  "version": "0.0.1",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TiagoJacinto/config.git"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "deepmerge": "4.3.1"
+  },
+  "devDependencies": {
+    "@types/deepmerge": "^2.2.3"
+  }
+}

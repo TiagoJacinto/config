@@ -1,6 +1,6 @@
 {
   "name": "@tiagojacinto/cucumber-config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -17,5 +17,8 @@
   },
   "devDependencies": {
     "@types/deepmerge": "^2.2.3"
+  },
+  "peerDependencies": {
+    "@swc-node/register": "1.x"
   }
 }

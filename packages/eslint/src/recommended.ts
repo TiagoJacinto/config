@@ -1,5 +1,4 @@
 import {
-  LanguageOptions,
   LanguagePluginOptions,
   Options,
   PluginConfig,
@@ -12,7 +11,6 @@ import javascript from './javascript.js';
 import typescript from './typescript.js';
 import defaultOptions from './defaultOptions.js';
 import type { Linter } from 'eslint';
-import importHelpers from 'eslint-plugin-import-helpers';
 import { isPrettierAvailable } from './lib/env.js';
 import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
@@ -29,7 +27,7 @@ export default (options: Options) => {
   function mergeOptions() {
     const { ratios, runtimeEnvironment, extensions, plugins } = mergeDeepLeft(
       options,
-      defaultOptions
+      defaultOptions,
     );
 
     const javascriptPluginOptions = mergePluginOptions({
@@ -89,6 +87,20 @@ export default (options: Options) => {
             files: files('tests/**/*'),
           },
         }),
+        turbo: mergePluginOptions({
+          plugin: plugins.build.turbo,
+          base: {},
+        }),
+        next: mergePluginOptions({
+          plugin: plugins.frameworks.next,
+          base: {
+            files: [
+              ...(javascriptPluginOptions?.files ?? []),
+              ...(typescriptPluginOptions?.files ?? []),
+              ...(reactPluginOptions?.files ?? []),
+            ],
+          },
+        }),
         javascript: javascriptPluginOptions,
         typescript: typescriptPluginOptions,
         svelte: sveltePluginOptions,
@@ -104,10 +116,10 @@ export default (options: Options) => {
     ...sonar({ ratios }),
     {
       files: [
-        ...(plugins.javascript?.withProjectService ? plugins.javascript.files : []),
-        ...(plugins.typescript?.withProjectService ? plugins.typescript.files : []),
-        ...(plugins.svelte?.withProjectService ? plugins.svelte.files : []),
-        ...(plugins.react?.withProjectService ? plugins.react.files : []),
+        ...((plugins.javascript?.withProjectService ? plugins.javascript.files : []) ?? []),
+        ...((plugins.typescript?.withProjectService ? plugins.typescript.files : []) ?? []),
+        ...((plugins.svelte?.withProjectService ? plugins.svelte.files : []) ?? []),
+        ...((plugins.react?.withProjectService ? plugins.react.files : []) ?? []),
       ],
       languageOptions: {
         parserOptions: {
@@ -153,9 +165,9 @@ function mergePluginOptions<T extends PluginOptions>({
   base,
 }: {
   plugin: PluginOption<T>;
-  base: T;
+  base?: T;
 }) {
-  if (!plugin) return null;
+  if (!plugin || !base) return null;
 
   if (typeof plugin === 'boolean') return base;
 

@@ -1,10 +1,10 @@
 import { Config } from '@sveltejs/kit';
 
 export type PluginConfig<T extends PluginOptions> = Partial<T>;
-export type PluginOption<T extends PluginOptions> = boolean | PluginConfig<T>;
+export type PluginOption<T extends PluginOptions = PluginOptions> = boolean | PluginConfig<T>;
 
 export type PluginOptions = {
-  files: string[];
+  files?: string[];
 };
 
 export type LanguageOptions = {
@@ -21,7 +21,7 @@ export type Options = Partial<{
   }>;
   plugins: Partial<{
     formatting: Partial<{
-      perfectionist: PluginOption<PluginOptions>;
+      perfectionist: PluginOption;
     }>;
     languages: Partial<{
       javascript: PluginOption<LanguagePluginOptions>;
@@ -30,7 +30,13 @@ export type Options = Partial<{
       react: PluginOption<LanguagePluginOptions>;
     }>;
     testing: Partial<{
-      jest: PluginOption<PluginOptions>;
+      jest: PluginOption;
+    }>;
+    build: Partial<{
+      turbo: PluginOption;
+    }>;
+    frameworks: Partial<{
+      next: PluginOption;
     }>;
   }>;
 }>;

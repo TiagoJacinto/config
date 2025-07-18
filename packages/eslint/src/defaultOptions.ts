@@ -13,5 +13,11 @@ export default {
     testing: {
       jest: false,
     },
+    build: {
+      turbo: false,
+    },
+    frameworks: {
+      next: false,
+    },
   },
 } satisfies RequiredDeep<Options>;

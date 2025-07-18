@@ -1,18 +1,28 @@
 import { Linter } from 'eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import react from '@eslint-react/eslint-plugin';
+import pluginReact from 'eslint-plugin-react';
 
-export default [
+const config: Linter.Config[] = [
+  react.configs['recommended'] as unknown as Linter.Config,
   {
-    languageOptions: {
-      ecmaVersion: 2020,
-    },
+    settings: { react: { version: 'detect' } },
     plugins: {
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // React scope no longer necessary with new JSX transform.
+      'react/react-in-jsx-scope': 'off',
+    },
+  },
+  {
+    languageOptions: pluginReact.configs.flat.recommended!.languageOptions,
+    plugins: {
+      'react-refresh': reactRefresh,
+    },
+    rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'sonarjs/no-nested-functions': [
         'error',
@@ -22,4 +32,6 @@ export default [
       ],
     },
   },
-] satisfies Linter.Config[];
+];
+
+export default config;

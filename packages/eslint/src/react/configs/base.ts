@@ -4,7 +4,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import react from '@eslint-react/eslint-plugin';
 import pluginReact from 'eslint-plugin-react';
 
-const config: Linter.Config[] = [
+export default [
   react.configs['recommended'] as unknown as Linter.Config,
   {
     settings: { react: { version: 'detect' } },
@@ -32,6 +32,4 @@ const config: Linter.Config[] = [
       ],
     },
   },
-];
-
-export default config;
+] as const satisfies Linter.Config[];

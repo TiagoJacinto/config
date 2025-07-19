@@ -11,7 +11,7 @@ import javascript from './javascript.js';
 import typescript from './typescript.js';
 import defaultOptions from './defaultOptions.js';
 import type { Linter } from 'eslint';
-import { isPrettierAvailable } from './lib/env.js';
+import { isBiomeAvailable, isPrettierAvailable } from './lib/env.js';
 import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
 import react from './react/index.js';
@@ -113,6 +113,7 @@ export default (options: Options) => {
 
   return [
     ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
+    ...(isBiomeAvailable ? [require('eslint-config-biome')] : []),
     ...sonar({ ratios }),
     {
       files: [

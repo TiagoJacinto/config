@@ -25,7 +25,7 @@ const files = (...extensions: (string | Falsy)[]) =>
 
 export default (options: Options) => {
   function mergeOptions() {
-    const { ratios, runtimeEnvironment, extensions, plugins } = mergeDeepLeft(
+    const { extensions, plugins, ...baseOptions } = mergeDeepLeft(
       options,
       defaultOptions,
     );
@@ -67,8 +67,7 @@ export default (options: Options) => {
     });
 
     return {
-      ratios,
-      runtimeEnvironment,
+      ...baseOptions,
       plugins: {
         perfectionist: mergePluginOptions({
           plugin: plugins.formatting.perfectionist,
@@ -109,11 +108,11 @@ export default (options: Options) => {
     };
   }
 
-  const { plugins, runtimeEnvironment, ratios } = mergeOptions();
+  const { plugins, runtimeEnvironment, ratios,configs } = mergeOptions();
 
   return [
-    ...(isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-    ...(isBiomeAvailable ? [require('eslint-config-biome')] : []),
+    ...(configs.prettier && isPrettierAvailable ? [require('eslint-config-prettier')] : []),
+    ...(configs.biome && isBiomeAvailable ? [require('eslint-config-biome')] : []),
     ...sonar({ ratios }),
     {
       files: [

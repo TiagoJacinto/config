@@ -4,7 +4,9 @@ import { config } from 'typescript-eslint';
 export default config(
   personal.configs.recommended({
     extensions: {
-      withProjectService: true,
+      with: {
+        projectService: true
+      }
     },
     plugins: {
       languages: {

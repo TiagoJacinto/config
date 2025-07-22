@@ -17,11 +17,7 @@ export type Options = Partial<{
   runtimeEnvironment: string;
   ratios: Partial<Record<'refactoring', number>>;
   extensions: Partial<{
-    withProjectService: boolean;
-  }>;
-  configs: Partial<{
-    prettier: boolean
-    biome: boolean
+    with: Partial<Record<"projectService" | "prettier" | "biome", boolean>>
   }>;
   plugins: Partial<{
     formatting: Partial<{

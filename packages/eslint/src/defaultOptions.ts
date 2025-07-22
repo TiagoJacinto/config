@@ -4,11 +4,11 @@ import { Options } from './types.js';
 export default {
   ratios: { refactoring: 1 },
   runtimeEnvironment: 'node',
-  extensions: { withProjectService: false },
-  configs: {
-    prettier:false,
-    biome:false
-  },
+  extensions: { with: {
+    projectService: false,
+    prettier: false,
+    biome: false
+  }},
   plugins: {
     formatting: {
       perfectionist: false,

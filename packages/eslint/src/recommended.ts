@@ -33,7 +33,7 @@ export default (options: Options) => {
       plugin: plugins.languages.javascript,
       base: {
         files: files('js', 'mjs', 'cjs', plugins.languages.react && 'jsx'),
-        withProjectService: extensions.withProjectService,
+        withProjectService: extensions.with.projectService,
       },
     });
 
@@ -41,7 +41,7 @@ export default (options: Options) => {
       plugin: plugins.languages.typescript,
       base: {
         files: files('ts', 'mts', 'cts', plugins.languages.react && 'tsx'),
-        withProjectService: extensions.withProjectService,
+        withProjectService: extensions.with.projectService,
       },
     });
 
@@ -53,7 +53,7 @@ export default (options: Options) => {
       plugin: plugins.languages.svelte,
       base: {
         files: files('svelte', plugins.languages.typescript && 'svelte.ts'),
-        withProjectService: extensions.withProjectService,
+        withProjectService: extensions.with.projectService,
       },
     });
 
@@ -61,12 +61,13 @@ export default (options: Options) => {
       plugin: plugins.languages.react,
       base: {
         files: files(plugins.languages.javascript && 'jsx', plugins.languages.typescript && 'tsx'),
-        withProjectService: extensions.withProjectService,
+        withProjectService: extensions.with.projectService,
       },
     });
 
     return {
       ...baseOptions,
+      extensions,
       plugins: {
         perfectionist: mergePluginOptions({
           plugin: plugins.formatting.perfectionist,
@@ -107,11 +108,9 @@ export default (options: Options) => {
     };
   }
 
-  const { plugins, runtimeEnvironment, ratios,configs } = mergeOptions();
-
+  const { plugins, runtimeEnvironment, ratios, extensions } = mergeOptions();
+  
   return [
-    ...(configs.prettier ? [require('eslint-config-prettier')] : []),
-    ...(configs.biome ? [require('eslint-config-biome')] : []),
     ...sonar({ ratios }),
     {
       files: [
@@ -140,7 +139,7 @@ export default (options: Options) => {
     }),
     ...resolvePlugin({
       pluginConfig: plugins.svelte,
-      base: svelte.configs.base(configs.prettier),
+      base: svelte.configs.base(extensions.with.prettier),
       configure(config, options) {
         if (options.withProjectService)
           config = [...config, ...svelte.extensions.withProjectService(options.svelteConfig)];

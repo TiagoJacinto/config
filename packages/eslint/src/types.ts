@@ -19,10 +19,10 @@ export type Options = Partial<{
   extensions: Partial<{
     withProjectService: boolean;
   }>;
-  configs: {
+  configs: Partial<{
     prettier: boolean
     biome: boolean
-  };
+  }>;
   plugins: Partial<{
     formatting: Partial<{
       perfectionist: PluginOption;

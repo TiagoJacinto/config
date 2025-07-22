@@ -11,7 +11,6 @@ import javascript from './javascript.js';
 import typescript from './typescript.js';
 import defaultOptions from './defaultOptions.js';
 import type { Linter } from 'eslint';
-import { isBiomeAvailable, isPrettierAvailable } from './lib/env.js';
 import svelte from './svelte/index.js';
 import { Config } from '@sveltejs/kit';
 import react from './react/index.js';
@@ -111,8 +110,8 @@ export default (options: Options) => {
   const { plugins, runtimeEnvironment, ratios,configs } = mergeOptions();
 
   return [
-    ...(configs.prettier && isPrettierAvailable ? [require('eslint-config-prettier')] : []),
-    ...(configs.biome && isBiomeAvailable ? [require('eslint-config-biome')] : []),
+    ...(configs.prettier ? [require('eslint-config-prettier')] : []),
+    ...(configs.biome ? [require('eslint-config-biome')] : []),
     ...sonar({ ratios }),
     {
       files: [
@@ -141,7 +140,7 @@ export default (options: Options) => {
     }),
     ...resolvePlugin({
       pluginConfig: plugins.svelte,
-      base: svelte.configs.base,
+      base: svelte.configs.base(configs.prettier),
       configure(config, options) {
         if (options.withProjectService)
           config = [...config, ...svelte.extensions.withProjectService(options.svelteConfig)];

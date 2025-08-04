@@ -1,10 +1,10 @@
 {
-  "type": "module",
-  "scripts": {
-    "lint": "eslint ."
-  },
-  "devDependencies": {
-    "eslint": "^9.21.0",
-    "@tiagojacinto/eslint-config": "workspace:*"
-  }
+	"type": "module",
+	"scripts": {
+		"lint": "eslint ."
+	},
+	"devDependencies": {
+		"@tiagojacinto/eslint-config": "workspace:*",
+		"eslint": "^9.32.0"
+	}
 }

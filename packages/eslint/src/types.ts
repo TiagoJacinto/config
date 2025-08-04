@@ -27,7 +27,7 @@ export type Options = Partial<{
       javascript: PluginOption<LanguagePluginOptions>;
       typescript: PluginOption<LanguagePluginOptions>;
       svelte: PluginOption<LanguagePluginOptions & { svelteConfig: Config }>;
-      react: PluginOption<LanguagePluginOptions>;
+      react: PluginOption<LanguagePluginOptions & { with: Partial<Record<"fastRefresh", boolean>> }>;
     }>;
     testing: Partial<{
       jest: PluginOption;

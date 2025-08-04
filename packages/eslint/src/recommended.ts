@@ -1,192 +1,220 @@
-import {
-  LanguagePluginOptions,
-  Options,
-  PluginConfig,
-  PluginOption,
-  PluginOptions,
-} from './types.js';
-import { mergeDeepLeft } from 'ramda';
-import sonar from './sonar.js';
-import javascript from './javascript.js';
-import typescript from './typescript.js';
-import defaultOptions from './defaultOptions.js';
-import type { Linter } from 'eslint';
-import svelte from './svelte/index.js';
-import { Config } from '@sveltejs/kit';
-import react from './react/index.js';
-import perfectionist from './perfectionist/index.js';
-import jest from './jest.js';
+import type { Config } from "@sveltejs/kit";
+import type { Linter } from "eslint";
+import { mergeDeepLeft } from "ramda";
+import defaultOptions from "./defaultOptions.js";
+import javascript from "./javascript.js";
+import jest from "./jest.js";
+import perfectionist from "./perfectionist/index.js";
+import react from "./react/index.js";
+import sonar from "./sonar.js";
+import svelte from "./svelte/index.js";
+import type {
+	LanguagePluginOptions,
+	Options,
+	PluginConfig,
+	PluginOption,
+	PluginOptions,
+} from "./types.js";
+import typescript from "./typescript.js";
 
-type Falsy = null | undefined | false | '' | 0 | 0n;
+type Falsy = null | undefined | false | "" | 0 | 0n;
 
 const files = (...extensions: (string | Falsy)[]) =>
-  extensions.filter(Boolean).length > 0 ? [`**/*.{${extensions.join(',')}}`] : [];
+	extensions.filter(Boolean).length > 0
+		? [`**/*.{${extensions.join(",")}}`]
+		: [];
 
 export default (options: Options) => {
-  function mergeOptions() {
-    const { extensions, plugins, ...baseOptions } = mergeDeepLeft(
-      options,
-      defaultOptions,
-    );
+	function mergeOptions() {
+		const { extensions, plugins, ...baseOptions } = mergeDeepLeft(
+			options,
+			defaultOptions,
+		);
 
-    const javascriptPluginOptions = mergePluginOptions({
-      plugin: plugins.languages.javascript,
-      base: {
-        files: files('js', 'mjs', 'cjs', plugins.languages.react && 'jsx'),
-        withProjectService: extensions.with.projectService,
-      },
-    });
+		const javascriptPluginOptions = mergePluginOptions({
+			plugin: plugins.languages.javascript,
+			base: {
+				files: files("js", "mjs", "cjs", plugins.languages.react && "jsx"),
+				withProjectService: extensions.with.projectService,
+			},
+		});
 
-    const typescriptPluginOptions = mergePluginOptions({
-      plugin: plugins.languages.typescript,
-      base: {
-        files: files('ts', 'mts', 'cts', plugins.languages.react && 'tsx'),
-        withProjectService: extensions.with.projectService,
-      },
-    });
+		const typescriptPluginOptions = mergePluginOptions({
+			plugin: plugins.languages.typescript,
+			base: {
+				files: files("ts", "mts", "cts", plugins.languages.react && "tsx"),
+				withProjectService: extensions.with.projectService,
+			},
+		});
 
-    const sveltePluginOptions = mergePluginOptions<
-      LanguagePluginOptions & {
-        svelteConfig?: Config;
-      }
-    >({
-      plugin: plugins.languages.svelte,
-      base: {
-        files: files('svelte', plugins.languages.typescript && 'svelte.ts'),
-        withProjectService: extensions.with.projectService,
-      },
-    });
+		const sveltePluginOptions = mergePluginOptions<
+			LanguagePluginOptions & {
+				svelteConfig?: Config;
+			}
+		>({
+			plugin: plugins.languages.svelte,
+			base: {
+				files: files("svelte", plugins.languages.typescript && "svelte.ts"),
+				withProjectService: extensions.with.projectService,
+			},
+		});
 
-    const reactPluginOptions = mergePluginOptions({
-      plugin: plugins.languages.react,
-      base: {
-        files: files(plugins.languages.javascript && 'jsx', plugins.languages.typescript && 'tsx'),
-        withProjectService: extensions.with.projectService,
-      },
-    });
+		const reactPluginOptions = mergePluginOptions({
+			plugin: plugins.languages.react,
+			base: {
+				files: files(
+					plugins.languages.javascript && "jsx",
+					plugins.languages.typescript && "tsx",
+				),
+				withProjectService: extensions.with.projectService,
+				with: {
+					fastRefresh: false,
+				},
+			},
+		});
 
-    return {
-      ...baseOptions,
-      extensions,
-      plugins: {
-        perfectionist: mergePluginOptions({
-          plugin: plugins.formatting.perfectionist,
-          base: {
-            files: [
-              ...(javascriptPluginOptions?.files ?? []),
-              ...(typescriptPluginOptions?.files ?? []),
-              ...(sveltePluginOptions?.files ?? []),
-              ...(reactPluginOptions?.files ?? []),
-            ],
-          },
-        }),
-        jest: mergePluginOptions({
-          plugin: plugins.testing.jest,
-          base: {
-            files: files('tests/**/*'),
-          },
-        }),
-        turbo: mergePluginOptions({
-          plugin: plugins.build.turbo,
-          base: {},
-        }),
-        next: mergePluginOptions({
-          plugin: plugins.frameworks.next,
-          base: {
-            files: [
-              ...(javascriptPluginOptions?.files ?? []),
-              ...(typescriptPluginOptions?.files ?? []),
-              ...(reactPluginOptions?.files ?? []),
-            ],
-          },
-        }),
-        javascript: javascriptPluginOptions,
-        typescript: typescriptPluginOptions,
-        svelte: sveltePluginOptions,
-        react: reactPluginOptions,
-      },
-    };
-  }
+		return {
+			...baseOptions,
+			extensions,
+			plugins: {
+				perfectionist: mergePluginOptions({
+					plugin: plugins.formatting.perfectionist,
+					base: {
+						files: [
+							...(javascriptPluginOptions?.files ?? []),
+							...(typescriptPluginOptions?.files ?? []),
+							...(sveltePluginOptions?.files ?? []),
+							...(reactPluginOptions?.files ?? []),
+						],
+					},
+				}),
+				jest: mergePluginOptions({
+					plugin: plugins.testing.jest,
+					base: {
+						files: files("tests/**/*"),
+					},
+				}),
+				turbo: mergePluginOptions({
+					plugin: plugins.build.turbo,
+					base: {},
+				}),
+				next: mergePluginOptions({
+					plugin: plugins.frameworks.next,
+					base: {
+						files: [
+							...(javascriptPluginOptions?.files ?? []),
+							...(typescriptPluginOptions?.files ?? []),
+							...(reactPluginOptions?.files ?? []),
+						],
+					},
+				}),
+				javascript: javascriptPluginOptions,
+				typescript: typescriptPluginOptions,
+				svelte: sveltePluginOptions,
+				react: reactPluginOptions,
+			},
+		};
+	}
 
-  const { plugins, runtimeEnvironment, ratios, extensions } = mergeOptions();
-  
-  return [
-    ...sonar({ ratios }),
-    {
-      files: [
-        ...((plugins.javascript?.withProjectService ? plugins.javascript.files : []) ?? []),
-        ...((plugins.typescript?.withProjectService ? plugins.typescript.files : []) ?? []),
-        ...((plugins.svelte?.withProjectService ? plugins.svelte.files : []) ?? []),
-        ...((plugins.react?.withProjectService ? plugins.react.files : []) ?? []),
-      ],
-      languageOptions: {
-        parserOptions: {
-          projectService: true,
-        },
-      },
-    },
-    ...resolvePlugin({
-      pluginConfig: plugins.perfectionist,
-      base: perfectionist.configs.recommended({ environment: runtimeEnvironment }),
-    }),
-    ...resolvePlugin({
-      pluginConfig: plugins.javascript,
-      base: javascript,
-    }),
-    ...resolvePlugin({
-      pluginConfig: plugins.typescript,
-      base: typescript as Linter.Config[],
-    }),
-    ...resolvePlugin({
-      pluginConfig: plugins.svelte,
-      base: svelte.configs.base(extensions.with.prettier),
-      configure(config, options) {
-        if (options.withProjectService)
-          config = [...config, ...svelte.extensions.withProjectService(options.svelteConfig)];
+	const { plugins, runtimeEnvironment, ratios, extensions } = mergeOptions();
 
-        return config;
-      },
-    }),
-    ...resolvePlugin({
-      pluginConfig: plugins.react,
-      base: react.configs.base,
-    }),
-    ...resolvePlugin({
-      pluginConfig: plugins.jest,
-      base: jest,
-    }),
-  ] satisfies Linter.Config[];
+	return [
+		...sonar({ ratios }),
+		{
+			files: [
+				...((plugins.javascript?.withProjectService
+					? plugins.javascript.files
+					: []) ?? []),
+				...((plugins.typescript?.withProjectService
+					? plugins.typescript.files
+					: []) ?? []),
+				...((plugins.svelte?.withProjectService ? plugins.svelte.files : []) ??
+					[]),
+				...((plugins.react?.withProjectService ? plugins.react.files : []) ??
+					[]),
+			],
+			languageOptions: {
+				parserOptions: {
+					projectService: true,
+				},
+			},
+		},
+		...resolvePlugin({
+			pluginConfig: plugins.perfectionist,
+			base: perfectionist.configs.recommended({
+				environment: runtimeEnvironment,
+			}),
+		}),
+		...resolvePlugin({
+			pluginConfig: plugins.javascript,
+			base: javascript,
+		}),
+		...resolvePlugin({
+			pluginConfig: plugins.typescript,
+			base: typescript as Linter.Config[],
+		}),
+		...resolvePlugin({
+			pluginConfig: plugins.svelte,
+			base: svelte.configs.base(extensions.with.prettier),
+			configure(config, options) {
+				if (options.withProjectService)
+					config = [
+						...config,
+						...svelte.extensions.withProjectService(options.svelteConfig),
+					];
+
+				return config;
+			},
+		}),
+		...resolvePlugin({
+			pluginConfig: plugins.react,
+			base: react.configs.base,
+			configure(config, options) {
+				if (options.with?.fastRefresh)
+					config = [...config, ...react.extensions.withFastRefresh];
+
+				return config;
+			},
+		}),
+		...resolvePlugin({
+			pluginConfig: plugins.jest,
+			base: jest,
+		}),
+	] satisfies Linter.Config[];
 };
 
 function mergePluginOptions<T extends PluginOptions>({
-  plugin,
-  base,
+	plugin,
+	base,
 }: {
-  plugin: PluginOption<T>;
-  base?: T;
+	plugin: PluginOption<T>;
+	base?: T;
 }) {
-  if (!plugin || !base) return null;
+	if (!plugin || !base) return null;
 
-  if (typeof plugin === 'boolean') return base;
+	if (typeof plugin === "boolean") return base;
 
-  return mergeDeepLeft(plugin, base) as unknown as T;
+	return mergeDeepLeft(plugin, base) as unknown as T;
 }
 
 function resolvePlugin<T extends PluginOptions>({
-  pluginConfig,
-  base,
-  configure,
+	pluginConfig,
+	base,
+	configure,
 }: {
-  pluginConfig: PluginConfig<T> | null;
-  base: Linter.Config[];
-  configure?: (config: Linter.Config[], options: PluginConfig<T>) => Linter.Config[];
+	pluginConfig: PluginConfig<T> | null;
+	base: Linter.Config[];
+	configure?: (
+		config: Linter.Config[],
+		options: PluginConfig<T>,
+	) => Linter.Config[];
 }) {
-  if (!pluginConfig) return [];
+	if (!pluginConfig) return [];
 
-  if (configure) base = configure(base, pluginConfig);
+	if (configure) base = configure(base, pluginConfig);
 
-  return base.map((c) => ({
-    ...c,
-    files: pluginConfig.files,
-  }));
+	return base.map((c) => ({
+		...c,
+		files: pluginConfig.files,
+	}));
 }

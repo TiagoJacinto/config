@@ -1,151 +1,90 @@
-const fs = require('fs');
-const { execSync } = require('child_process');
-const { input, checkbox, select } = require('@inquirer/prompts');
+const fs = require("fs");
+const { execSync } = require("child_process");
+const { input, select } = require("@inquirer/prompts");
 
 /** @typedef {{name: string, version: string, scripts?:Record<string,string>}} PackageJson */
-/** @typedef {{cwd: string, currentVersion:string, newVersion: string, packageJsonPath: string, packageJson: PackageJson, newPackageJson: PackageJson}} PackagesConfiguration */
+/** @typedef {{cwd: string, currentVersion:string, packageJsonPath: string, packageJson: PackageJson}} PackagesConfiguration */
 
 const askForCommitMessage = () =>
-  input({
-    message: 'Enter the commit message:',
-  });
+	input({
+		message: "Enter the commit message:",
+	});
 
 const getPackageCwd = (/**@type {string}*/ pkg) => `./packages/${pkg}`;
 
-const getPackageJsonPath = (/**@type {string}*/ pkg) => `./packages/${pkg}/package.json`;
+const getPackageJsonPath = (/**@type {string}*/ pkg) =>
+	`./packages/${pkg}/package.json`;
 
 const getPackageJson = (/**@type {string}*/ path) =>
-  /**@type {PackageJson}*/ (JSON.parse(fs.readFileSync(path, 'utf-8')));
+	/**@type {PackageJson}*/ (JSON.parse(fs.readFileSync(path, "utf-8")));
 
-const updatePackageJson = (/**@type {string}*/ path, /**@type {PackageJson}*/ newPackageJson) => {
-  fs.writeFileSync(path, JSON.stringify(newPackageJson, null, 2));
+const updatePackageJson = (
+	/**@type {string}*/ path,
+	/**@type {PackageJson}*/ newPackageJson,
+) => {
+	fs.writeFileSync(path, JSON.stringify(newPackageJson, null, 2));
 
-  console.log(`Version updated to ${newPackageJson.version}`);
+	console.log(`Version updated to ${newPackageJson.version}`);
 };
 
 (async () => {
-  try {
-    const mode = await select({
-      message: 'Select the mode:',
-      choices: ['one', 'multiple'],
-    });
+	try {
+		const mode = await select({
+			message: "Select the mode:",
+			choices: ["one"],
+		});
 
-    const packages = fs.readdirSync('./packages');
+		const packages = fs.readdirSync("./packages");
 
-    execSync('pnpm install', { stdio: 'inherit' });
+		execSync("pnpm install", { stdio: "inherit" });
 
-    if (mode === 'one') {
-      const pkg = await select({
-        message: 'Select the package to publish:',
-        choices: packages,
-      });
+		if (mode === "one") {
+			const pkg = await select({
+				message: "Select the package to publish:",
+				choices: packages,
+			});
 
-      const commitMessage = await askForCommitMessage();
+			const packageJsonPath = getPackageJsonPath(pkg);
+			const packageJson = getPackageJson(packageJsonPath);
 
-      const packageJsonPath = getPackageJsonPath(pkg);
-      const packageJson = getPackageJson(packageJsonPath);
+			const cwd = getPackageCwd(pkg);
 
-      console.log('Current version: ', packageJson.version);
-      const version = await input({ message: 'Enter the new version:' });
+			execSync("pnpm install", { stdio: "inherit", cwd });
 
-      const cwd = getPackageCwd(pkg);
+			if (packageJson.scripts) {
+				if ("build" in packageJson.scripts)
+					execSync("pnpm run build", { stdio: "inherit", cwd });
+				if ("test" in packageJson.scripts)
+					execSync("pnpm run test", { stdio: "inherit", cwd });
+			}
 
-      execSync('pnpm install', { stdio: 'inherit', cwd });
+			console.log("Current version: ", packageJson.version);
+			const version = await input({ message: "Enter the new version:" });
 
-      if (packageJson.scripts) {
-        if ('build' in packageJson.scripts) execSync('pnpm run build', { stdio: 'inherit', cwd });
-        if ('test' in packageJson.scripts) execSync('pnpm run test', { stdio: 'inherit', cwd });
-      }
+			updatePackageJson(packageJsonPath, { ...packageJson, version });
 
-      updatePackageJson(packageJsonPath, { ...packageJson, version });
+			execSync("npm publish", { stdio: "inherit", cwd });
 
-      execSync('npm publish', { stdio: 'inherit', cwd });
+			execSync("git add .", { stdio: "inherit", cwd });
 
-      execSync('git add .', { stdio: 'inherit', cwd });
+			const commitMessage = await askForCommitMessage();
 
-      execSync(
-        `git commit -m "publish package ${pkg} with version ${version} | ${commitMessage}"`,
-        {
-          stdio: 'inherit',
-          cwd,
-        }
-      );
-    }
+			execSync(
+				`git commit -m "publish package ${pkg} with version ${version} | ${commitMessage}"`,
+				{
+					stdio: "inherit",
+					cwd,
+				},
+			);
+		}
 
-    if (mode === 'multiple') {
-      /** @type {string[]} */ const selectedPackages = await checkbox({
-        message: 'Select the packages to publish:',
-        choices: packages,
-      });
+		execSync("git push -u origin main", {
+			stdio: "inherit",
+		});
 
-      const commitMessage = await askForCommitMessage();
-
-      const packagesConfiguration = /**@type {Record<string, PackagesConfiguration>}*/ ({});
-
-      for (const pkg of selectedPackages) {
-        const packageJsonPath = getPackageJsonPath(pkg);
-        const packageJson = getPackageJson(packageJsonPath);
-
-        console.log(`Configure package: ${pkg}`);
-        console.log('Current version: ', packageJson.version);
-        const version = await input({ message: 'Enter the new version:' });
-
-        packagesConfiguration[pkg] = {
-          cwd: getPackageCwd(pkg),
-          currentVersion: packageJson.version,
-          newVersion: version,
-          packageJsonPath,
-          packageJson,
-          newPackageJson: {
-            ...packageJson,
-            version,
-          },
-        };
-      }
-
-      for (const pkg of selectedPackages) {
-        const { cwd, packageJson, packageJsonPath, newPackageJson } =
-          /**@type {PackagesConfiguration}*/ (packagesConfiguration[pkg]);
-
-        execSync('pnpm install', { stdio: 'inherit', cwd });
-
-        if (packageJson.scripts) {
-          if ('build' in packageJson.scripts) execSync('pnpm run build', { stdio: 'inherit', cwd });
-          if ('test' in packageJson.scripts) execSync('pnpm run test', { stdio: 'inherit', cwd });
-        }
-
-        updatePackageJson(packageJsonPath, newPackageJson);
-
-        execSync('npm publish', { stdio: 'inherit', cwd });
-
-        execSync('git add .', { stdio: 'inherit', cwd });
-
-        console.log('----------------------------------------------------------');
-
-        execSync(
-          `git commit -m "publish packages [${selectedPackages.join(
-            ', '
-          )}] | ${commitMessage}" ${Object.entries(packagesConfiguration)
-            .map(
-              ([name, { currentVersion, newVersion }]) =>
-                `-m "${name}: ${currentVersion} => ${newVersion}"`
-            )
-            .join(' ')}`,
-          {
-            stdio: 'inherit',
-            cwd,
-          }
-        );
-      }
-    }
-
-    execSync('git push -u origin main', {
-      stdio: 'inherit',
-    });
-
-    console.log('Commit pushed to origin main');
-  } catch (e) {
-    const error = /**@type {Error}*/ (e);
-    console.error('An error occurred:', error.message);
-  }
+		console.log("Commit pushed to origin main");
+	} catch (e) {
+		const error = /**@type {Error}*/ (e);
+		console.error("An error occurred:", error.message);
+	}
 })();

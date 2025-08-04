@@ -38,7 +38,7 @@ importers:
         version: 15.4.1
       '@nx/eslint-plugin':
         specifier: ^20.4.0
-        version: 20.8.2(@babel/traverse@7.27.4)(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9)(@typescript-eslint/parser@8.33.0(eslint@9.27.0)(typescript@5.8.3))(eslint-config-prettier@9.1.0(eslint@9.27.0))(eslint@9.27.0)(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))(typescript@5.8.3)
+        version: 20.8.2(@babel/traverse@7.27.4)(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9)(@typescript-eslint/parser@8.33.0(eslint@9.27.0)(typescript@5.8.3))(eslint@9.27.0)(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))(typescript@5.8.3)
       '@sveltejs/kit':
         specifier: 2.17.3
         version: 2.17.3(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.33.10)(vite@6.3.5(@types/node@22.10.10)(yaml@2.8.0)))(svelte@5.33.10)(vite@6.3.5(@types/node@22.10.10)(yaml@2.8.0))
@@ -94,18 +94,12 @@ importers:
         specifier: ^8.25.0
         version: 8.33.0(eslint@9.27.0)(typescript@5.8.3)
     devDependencies:
-      '@types/eslint-config-prettier':
-        specifier: 6.11.3
-        version: 6.11.3
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.17
       '@types/ramda':
         specifier: ^0.30.2
         version: 0.30.2
-      eslint-config-prettier:
-        specifier: ^9.1.0
-        version: 9.1.0(eslint@9.27.0)
       eslint-plugin-turbo:
         specifier: ^2.5.5
         version: 2.5.5(eslint@9.27.0)(turbo@2.5.5)
@@ -1740,9 +1734,6 @@ packages:
     resolution: {integrity: sha512-ct4srnukH/SHdVPyJIFV73YJIt9PTYTaqQbjrCvRrbc9LxHdGcJb132SuWwnDTPyx5UjCVS/I00wj0i5IXfqSA==}
     deprecated: This is a stub types definition. deepmerge provides its own type definitions, so you do not need this installed.
 
-  '@types/eslint-config-prettier@6.11.3':
-    resolution: {integrity: sha512-3wXCiM8croUnhg9LdtZUJQwNcQYGWxxdOWDjPe1ykCqJFPVpzAKfs/2dgSoCtAvdPeaponcWPI7mPcGGp9dkKQ==}
-
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
@@ -2481,12 +2472,6 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       eslint: '>=6.0.0'
-
-  eslint-config-prettier@9.1.0:
-    resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
-    hasBin: true
-    peerDependencies:
-      eslint: '>=7.0.0'
 
   eslint-import-resolver-node@0.3.9:
     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
@@ -5849,7 +5834,7 @@ snapshots:
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
-  '@nx/eslint-plugin@20.8.2(@babel/traverse@7.27.4)(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9)(@typescript-eslint/parser@8.33.0(eslint@9.27.0)(typescript@5.8.3))(eslint-config-prettier@9.1.0(eslint@9.27.0))(eslint@9.27.0)(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))(typescript@5.8.3)':
+  '@nx/eslint-plugin@20.8.2(@babel/traverse@7.27.4)(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9)(@typescript-eslint/parser@8.33.0(eslint@9.27.0)(typescript@5.8.3))(eslint@9.27.0)(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))(typescript@5.8.3)':
     dependencies:
       '@nx/devkit': 20.8.2(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))
       '@nx/js': 20.8.2(@babel/traverse@7.27.4)(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9)(nx@20.8.2(@swc-node/register@1.10.10(@swc/core@1.12.9)(@swc/types@0.1.23)(typescript@5.8.3))(@swc/core@1.12.9))
@@ -5862,8 +5847,6 @@ snapshots:
       jsonc-eslint-parser: 2.4.0
       semver: 7.7.2
       tslib: 2.8.1
-    optionalDependencies:
-      eslint-config-prettier: 9.1.0(eslint@9.27.0)
     transitivePeerDependencies:
       - '@babel/traverse'
       - '@swc-node/register'
@@ -6229,8 +6212,6 @@ snapshots:
   '@types/deepmerge@2.2.3':
     dependencies:
       deepmerge: 4.3.1
-
-  '@types/eslint-config-prettier@6.11.3': {}
 
   '@types/estree@1.0.7': {}
 
@@ -7063,10 +7044,6 @@ snapshots:
     dependencies:
       eslint: 9.27.0
       semver: 7.7.2
-
-  eslint-config-prettier@9.1.0(eslint@9.27.0):
-    dependencies:
-      eslint: 9.27.0
 
   eslint-import-resolver-node@0.3.9:
     dependencies:

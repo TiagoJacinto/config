@@ -8,7 +8,7 @@
     "allowJs": true,
     "jsx": "preserve",
     "target": "ES2022",
-    "lib": ["es2022", "DOM.Iterable"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "moduleDetection": "force",
     "esModuleInterop": true,
     "isolatedModules": true,
